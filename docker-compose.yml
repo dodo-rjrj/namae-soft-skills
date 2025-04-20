@@ -8,7 +8,8 @@ services:
     ports:
       - "3000:80"
     depends_on:
-      - backend
+      - backend #on peut la supprimer!
+    network:
 
   backend:
     build:
@@ -19,8 +20,9 @@ services:
     volumes:
       - ./backend:/app
     environment:
-      - NODE_ENV=development
-      - DATABASE_URL=${DATABASE_URL}
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=mydatabase
     command: npm start
     depends_on:
       - postgres  
@@ -40,3 +42,6 @@ services:
 
 volumes:
   postgres_data:
+
+
+#network:
