@@ -15,7 +15,10 @@ git checkout developp
 ## 🚀Lancement avec Docker
 
   1. Construire les images
+```bash
 docker-compose build
-
-  2. Vérifier l'état
+```
+  3. Vérifier l'état
+```bash
 docker-compose ps
+```
