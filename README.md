@@ -18,7 +18,7 @@ git checkout developp
 ```bash
 docker-compose build
 ```
-  3. Vérifier l'état
+  2. Vérifier l'état
 ```bash
 docker-compose ps
 ```
