@@ -16,7 +16,7 @@ git checkout developp
 
   1. Construire les images
 ```bash
-docker-compose build
+docker-compose up --build
 ```
   2. Vérifier l'état
 ```bash
