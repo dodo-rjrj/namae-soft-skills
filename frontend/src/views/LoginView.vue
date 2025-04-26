@@ -50,13 +50,32 @@ const login = async () => {
             password: password.value,
         })
 
-        authStore.login(data.user, data.token)
+        authStore.login(data.user, data.token, data.refreshToken)
 
         const redirect = route.query.redirect || '/dashboard'
         router.push(redirect)
     } catch (err) {
-        const message = err.response?.data?.message || 'Invalid credentials or server error'
-        alert('Login failed: ' + message)
+        let errorMessage = 'An error occurred during login'
+        
+        if (err.response) {
+            switch (err.response.status) {
+                case 401:
+                    errorMessage = 'Invalid email or password'
+                    break
+                case 429:
+                    errorMessage = 'Too many login attempts. Please try again later'
+                    break
+                case 500:
+                    errorMessage = 'Server error. Please try again later'
+                    break
+                default:
+                    errorMessage = err.response.data?.message || 'Login failed'
+            }
+        } else if (err.request) {
+            errorMessage = 'Network error. Please check your connection'
+        }
+        
+        alert('Login failed: ' + errorMessage)
     } finally {
         loading.value = false
     }
