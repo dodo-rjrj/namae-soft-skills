@@ -1,0 +1,59 @@
+<template>
+  <div class="welcome-card">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="welcome-title">
+          Welcome back,
+          <span class="highlight">{{ name }}</span>
+        </h1>
+        <p class="tagline">
+          Soft skills don't show up on a resume — they're felt in every word, every gesture, and every silence
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { defineProps } from 'vue'
+
+defineProps({
+  name: {
+    type: String,
+    required: true
+  }
+})
+</script>
+
+<style scoped>
+.welcome-card {
+  background: #EFF6FF;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.highlight {
+  background-color: #93C5FD;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.375rem;
+  color: #1E40AF;
+  font-weight: 600;
+}
+
+.tagline {
+  color: #6B7280;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.welcome-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1F2937;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+</style>
