@@ -7,4 +7,12 @@
 <script setup>
 </script>
 
-<style></style>
+<style>
+#app {
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+body {
+  background: #fff !important;
+}
+</style>
