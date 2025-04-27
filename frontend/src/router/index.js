@@ -1,30 +1,116 @@
-import { createRouter, createWebHistory } from "vue-router";
-import { useAuthStore } from "../store/auth";
-import LoginView from "../views/LoginView.vue";
-import StudentDashboard from "../views/DashboardStudent.vue";
-
-const routes = [
-  { path: "/", component: LoginView },
-  {
-    path: "/dashboard",
-    component: StudentDashboard,
-    meta: { requiresAuth: true },
-  },
-];
+import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '../store/auth'
+import { 
+  authGuard, 
+  guestGuard,
+  roleGuard, 
+  sessionTimeoutGuard,
+  activityTracker,
+  secureHeaders
+} from './middleware/security'
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes,
-});
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/',
+      redirect: '/dashboard'
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/LoginView.vue'),
+      meta: { 
+        requiresAuth: false,
+        security: {
+          noCache: true,
+          noStore: true
+        }
+      }
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('../views/RegisterView.vue'),
+      meta: { 
+        requiresAuth: false,
+        security: {
+          noCache: true,
+          noStore: true
+        }
+      }
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: () => import('../views/DashboardStudent.vue'),
+      meta: { 
+        requiresAuth: true,
+        roles: ['student', 'admin'],
+        security: {
+          cacheControl: 'private, max-age=0, must-revalidate'
+        }
+      }
+    },
+    {
+      path: '/unauthorized',
+      name: 'unauthorized',
+      component: () => import('../views/UnauthorizedView.vue'),
+      meta: { 
+        requiresAuth: false,
+        security: {
+          noCache: true
+        }
+      }
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: () => import('../views/NotFoundView.vue'),
+      meta: { 
+        requiresAuth: false,
+        security: {
+          noCache: true
+        }
+      }
+    }
+  ]
+})
 
-router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore();
+// Apply all security middleware in order
+router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore()
 
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next({ path: "/", query: { redirect: to.fullPath } });
-  } else {
-    next();
-  }
-});
+  // Apply security headers
+  secureHeaders(to, from, () => {
+    // Track user activity
+    activityTracker(to, from, () => {
+      // Check session timeout
+      sessionTimeoutGuard(to, from, () => {
+        // Handle non-protected routes
+        if (to.meta.requiresAuth === false) {
+          if (authStore.isAuthenticated && (to.name === 'login' || to.name === 'register')) {
+            return next({ name: 'dashboard' })
+          }
+          return next()
+        }
 
-export default router;
+        // Handle protected routes
+        if (!authStore.isAuthenticated) {
+          return next({ name: 'login', query: { redirect: to.fullPath } })
+        }
+
+        // Check roles if required
+        if (to.meta.roles) {
+          if (!authStore.userRole || !to.meta.roles.includes(authStore.userRole)) {
+            return next('/unauthorized')
+          }
+        }
+
+        return next()
+      })
+    })
+  })
+})
+
+export default router
