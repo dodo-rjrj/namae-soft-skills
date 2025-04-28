@@ -31,7 +31,7 @@ export default {
     })
 
     // Prevent XSS through v-html
-    app.config.compilerOptions.delimiters = ['{{', '}}']
-    app.config.compilerOptions.whitespace = 'preserve'
+    // app.config.compilerOptions.delimiters = ['{{', '}}']
+    // app.config.compilerOptions.whitespace = 'preserve'
   }
 } 
