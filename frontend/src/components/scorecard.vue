@@ -1,6 +1,6 @@
 <template>
   <div class="score-card">
-    <h2 class="score-title">SCORE</h2>
+    <h2 class="score-title">SCORE GLOBALE:</h2>
     <div class="score-value">
       <span>{{ score }}/5</span>
     </div>
@@ -17,6 +17,7 @@ const score = ref(4.4)
 .score-card {
   background: #EFF6FF;
   padding: 2rem;
+  margin: 20px;
   border-radius: 1rem;
   text-align: center;
   width: 100%;

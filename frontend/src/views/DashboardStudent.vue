@@ -1,19 +1,18 @@
 <template>
   <div class="app-container">
-    <div class="navbar-container"><Navbar /></div>
     <div class="content-container">
-      <div class="sidebar-container"><Sidebare role="student" /></div>
-      <div class="main-content">
-        <div class="header2 top-header">
-          <Welcome name="MANAR" />
+      <div class="sidebar-container"><Sidebare /></div>   
+      <div class="main-content"> <div class="navbar-container"><Navbar /></div> <div class="content">
+      <div class="header2 top-header flex items-center gap-4">
+        <Welcome name="MANAR" />
           <Total />
         </div>
         <SoftSkillCards />
         <CommentCount />
-        <Footer />
+        
       </div>
     </div>
-  </div>
+  </div></div>
 </template>
 
 <script setup>
@@ -25,7 +24,7 @@ import CommentCount from '../components/comment.vue'
 import Total from '../components/scorecard.vue'
 import Navbar from '../components/navbar.vue'
 import SoftSkillCards from '../components/SoftSkillCards.vue'
-import Footer from '../components/footer.vue'
+
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -39,6 +38,7 @@ const logout = () => {
 
 <style scoped>
 .app-container {
+  background-color: hsla(0, 0%, 92%, 0.217);
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -59,18 +59,17 @@ const logout = () => {
 }
 
 .main-content {
-  flex-grow: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 1rem;
-  margin-left: 20px;
+ 
 }
 
 .header2 {
   display: flex;
   align-items: center;
-  margin: 1rem;
+  gap: 1rem; /* or gap: 16px */
 }
+
 
 .top-header {
   width: 100%;
@@ -79,4 +78,14 @@ const logout = () => {
 .header h1 {
   margin: 0;
 }
+.content {
+  flex: 1;
+  padding-left: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  overflow-y: auto; /* Only this area will scroll */
+ 
+}
+
 </style>

@@ -7,12 +7,12 @@ import HistoryTable from '../components/HistoryTable.vue'
 
 <template>
   <div class="app-container">
-    <div class="navbar-container"><Navbar /></div>
     <div class="content-container">
       <div class="sidebar-container"><Sidebar /></div>
-      <div class="main-content">
+      <div class="main-content">    <div class="navbar-container"><Navbar /></div>
+
         <HistoryTable />
-        <Footer />
+       
       </div>
     </div>
   </div>
@@ -22,7 +22,9 @@ import HistoryTable from '../components/HistoryTable.vue'
 .app-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100vh;  
+  background-color: hsla(0, 0%, 92%, 0.217);
+
 }
 
 .navbar-container {
@@ -43,8 +45,8 @@ import HistoryTable from '../components/HistoryTable.vue'
   flex-grow: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 1rem;
-  margin-left: 20px;
+ 
+
 }
 
 .header2 {

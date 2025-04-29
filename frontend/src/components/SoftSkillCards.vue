@@ -66,7 +66,8 @@ const skills = [
 <style scoped>
 .skill-container {
   width: 100%;
-  overflow-x: auto;
+  height: max-content;
+  overflow-x: hidden;
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
   background-color: #ffffff;

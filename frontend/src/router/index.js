@@ -53,6 +53,29 @@ const router = createRouter({
       }
     },
     {
+      path: '/auto-evaluation',
+      name: 'auto-evaluation',
+      component: () => import('../views/auto-evaluate.vue'),
+      meta: { 
+        requiresAuth: false,
+        roles: ['student', 'admin'],
+        security: {
+          noCache: true        }
+      }
+    },
+    {
+      path: '/history',
+      name: 'history',
+      component: () => import('../views/History.vue'),
+      meta: { 
+        requiresAuth: false,
+        roles: ['student', 'admin'],
+        security: {
+          noCache: true        }
+      }
+    },
+    
+    {
       path: '/unauthorized',
       name: 'unauthorized',
       component: () => import('../views/UnauthorizedView.vue'),

@@ -15,20 +15,16 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
+import { ref } from 'vue'
+const name=ref('MANAR')
 
-defineProps({
-  name: {
-    type: String,
-    required: true
-  }
-})
 </script>
 
 <style scoped>
 .welcome-card {
   background: #EFF6FF;
-  padding: 2rem;
+  padding: 3rem;
+  width:auto;
   border-radius: 1rem;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 }
