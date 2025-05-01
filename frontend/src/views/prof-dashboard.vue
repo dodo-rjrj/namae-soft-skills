@@ -1,8 +1,8 @@
 <script setup>
 import Sidebar from '../components/sidebare.vue'
 import Navbar from '../components/navbar.vue'
-import Footer from '../components/footer.vue'
-import HistoryTable from '../components/student/HistoryTable.vue'
+import profhome from '../components/prof-com.vue'
+
 </script>
 
 <template>
@@ -11,7 +11,7 @@ import HistoryTable from '../components/student/HistoryTable.vue'
       <div class="sidebar-container"><Sidebar /></div>
       <div class="main-content">    <div class="navbar-container"><Navbar /></div>
 
-        <HistoryTable />
+        <profhome />
        
       </div>
     </div>
@@ -23,7 +23,7 @@ import HistoryTable from '../components/student/HistoryTable.vue'
   display: flex;
   flex-direction: column;
   height: 100vh;  
-  background-color: hsla(0, 0%, 92%, 0.217);
+  background-color:#eff6ff;
 
 }
 

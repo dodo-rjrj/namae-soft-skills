@@ -1,8 +1,7 @@
 <script setup>
 import Sidebar from '../components/sidebare.vue'
 import Navbar from '../components/navbar.vue'
-import Footer from '../components/footer.vue'
-import HistoryTable from '../components/student/HistoryTable.vue'
+import evaluation from '../components/prof-evaluation.vue'
 </script>
 
 <template>
@@ -11,7 +10,7 @@ import HistoryTable from '../components/student/HistoryTable.vue'
       <div class="sidebar-container"><Sidebar /></div>
       <div class="main-content">    <div class="navbar-container"><Navbar /></div>
 
-        <HistoryTable />
+        <evaluation />
        
       </div>
     </div>
