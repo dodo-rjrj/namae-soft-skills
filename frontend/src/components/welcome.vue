@@ -40,8 +40,9 @@ const name=ref('MANAR')
 .tagline {
   color: #6B7280;
   margin-top: 0.75rem;
-  font-size: 0.875rem;
+  font-size: 1.25rem;
   line-height: 1.25rem;
+
 }
 
 .welcome-title {
