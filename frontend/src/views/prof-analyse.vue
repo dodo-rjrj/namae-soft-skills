@@ -2,7 +2,6 @@
 <script setup>
 import Sidebar from '../components/sidebare.vue'
 import Navbar from '../components/navbar.vue'
-import Footer from '../components/footer.vue'
 import ProfAnalyse from '../components/profanalyse.vue'
 </script>
 

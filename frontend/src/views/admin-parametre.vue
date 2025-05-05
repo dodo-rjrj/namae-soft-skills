@@ -1,7 +1,8 @@
 <script setup>
 import Sidebar from '../components/sidebare.vue'
 import Navbar from '../components/navbar.vue'
-import HistoryTable from '../components/HistoryTable.vue'
+import admin_param from '../components/admin-parametre.vue'
+
 </script>
 
 <template>
@@ -10,7 +11,7 @@ import HistoryTable from '../components/HistoryTable.vue'
       <div class="sidebar-container"><Sidebar /></div>
       <div class="main-content">    <div class="navbar-container"><Navbar /></div>
 
-        <HistoryTable />
+        <admin_param />
        
       </div>
     </div>
@@ -22,7 +23,7 @@ import HistoryTable from '../components/HistoryTable.vue'
   display: flex;
   flex-direction: column;
   height: 100vh;  
-  background-color: hsla(0, 0%, 92%, 0.217);
+  background-color:#fcfcfc;
 
 }
 
