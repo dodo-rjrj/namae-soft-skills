@@ -472,7 +472,7 @@
     display: flex;
     flex-direction: column;
   }
-
+  
   .comment-text {
     flex-grow: 1;
     color: #5d4b8c;
