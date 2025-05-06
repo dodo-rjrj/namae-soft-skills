@@ -1,6 +1,6 @@
 <template>
   <div class="history-container">
-    <h2 class="title">Historique de Étudiants</h2>
+    <h2 class="title">Historique des Étudiants</h2>
     
     <!-- Filters -->
     <div class="filters-section">
@@ -74,7 +74,7 @@
         <div class="cell class">{{ student.class }}</div>
         <div class="cell score">{{ student.score }}/5</div>
         <div class="cell">
-          <button class="btn-evaluate" @click="evaluate(student)">PROFILE</button>
+          <Router-link to="/prof-student-dossier" class="btn-evaluate" >PROFILE</Router-link>
         </div>
       </div>
     </div>

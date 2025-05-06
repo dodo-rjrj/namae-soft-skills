@@ -1,7 +1,7 @@
 <script setup>
 import Sidebar from '../components/sidebare.vue'
 import Navbar from '../components/navbar.vue'
-import admin_gestion from '../components/admin-signalement.vue'
+import setting from '../components/com-setting.vue'
 
 </script>
 
@@ -11,7 +11,7 @@ import admin_gestion from '../components/admin-signalement.vue'
       <div class="sidebar-container"><Sidebar /></div>
       <div class="main-content">    <div class="navbar-container"><Navbar /></div>
 
-        <admin_gestion />
+        <setting />
        
       </div>
     </div>
@@ -23,7 +23,7 @@ import admin_gestion from '../components/admin-signalement.vue'
   display: flex;
   flex-direction: column;
   height: 100vh;  
-  background-color:#ffffff;
+  background-color:#fcfcfc;
 
 }
 

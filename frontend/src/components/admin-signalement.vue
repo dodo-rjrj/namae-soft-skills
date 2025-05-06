@@ -1,8 +1,8 @@
 <template>
     <div class="p-4">
       <!-- En-tête -->
-      <div class="mb-4 flex flex-wrap justify-between items-center gap-2">
-        <h1 class="text-xl font-bold">Gestion des Signalements</h1>
+      <div class="mb-4 flex flex-wrap justify-between items-center gap-2 ">
+        <h1 class="text-2xl font-bold text-blue-800 mb-3 sm:mb-0">Gestion des Signalements</h1>
         <div class="flex gap-2">
           <input 
             type="text" 

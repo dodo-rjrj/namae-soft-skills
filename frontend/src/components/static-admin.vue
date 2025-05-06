@@ -3,7 +3,7 @@
   <!-- Header -->
     <div class="mb-6 flex flex-col sm:flex-row justify-between items-center">
       <h1 class="text-2xl font-bold text-blue-800 mb-3 sm:mb-0">
-        <span class="mr-2">📈</span>Tableau de Bord Statistiques
+        <span class="mr-2">📈</span>Tableau de Bord 
       </h1>
       <div class="bg-white rounded-lg shadow p-1">
         <button 

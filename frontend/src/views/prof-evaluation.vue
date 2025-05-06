@@ -22,7 +22,7 @@ import evaluation from '../components/prof-evaluation.vue'
   display: flex;
   flex-direction: column;
   height: 100vh;  
-  background-color: hsla(0, 0%, 92%, 0.217);
+  background-color: hsla(0, 0%, 100%, 0.217);
 
 }
 

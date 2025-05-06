@@ -136,8 +136,9 @@ const submitEvaluation = () => {
 
 <style scoped>
 .evaluation-wrapper {
-  max-width: 800px;
+  max-width: auto;
   margin: 0 auto;
+  margin: 20px;
 }
 
 .evaluation-card {

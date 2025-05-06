@@ -359,7 +359,7 @@ export default {
 
 /* Styles pour la carte des filtres */
 .filtres-card {
-  background-color: #c3cfff;
+  background-color: #dbeafe;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   padding: 20px;

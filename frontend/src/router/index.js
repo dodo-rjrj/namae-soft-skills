@@ -14,7 +14,15 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/dashboard'
+      name: 'home',
+      component: () => import('../views/HomePage.vue'),
+      meta: { 
+        requiresAuth: false,
+        security: {
+          noCache: true,
+          noStore: true
+        }
+      }
     },
     // Authentication routes
     {
@@ -189,6 +197,17 @@ const router = createRouter({
           noCache: true
         }
       }
+    },//settings:
+    {
+      path: '/settings',
+      name: 'settings',
+      component: () => import('../views/setting.vue'),
+      meta: { 
+        requiresAuth: true,
+        security: {
+          noCache: true
+        }
+      }
     },
     
     // Error and utility routes
@@ -229,8 +248,14 @@ router.beforeEach(async (to, from, next) => {
       sessionTimeoutGuard(to, from, () => {
         // Handle non-protected routes
         if (to.meta.requiresAuth === false) {
-          if (authStore.isAuthenticated && (to.name === 'login' || to.name === 'register')) {
-            return next({ name: 'dashboard' })
+          // If user is authenticated and tries to access login/register, redirect to dashboard
+          if (authStore.isAuthenticated && (to.name === 'login' || to.name === 'register' || to.name === 'home')) {
+            // Redirect to appropriate dashboard based on role
+            if (authStore.userRole === 'student') {
+              return next({ name: 'dashboard' })
+            } else if (authStore.userRole === 'professor' || authStore.userRole === 'admin') {
+              return next({ name: 'prof-dashboard' })
+            }
           }
           return next()
         }

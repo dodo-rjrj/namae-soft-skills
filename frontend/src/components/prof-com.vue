@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard bg-blue-50 p-6 min-h-screen">
+  <div class="dashboard bg-white p-6 min-h-screen">
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto">
       <!-- Header with filters -->
@@ -9,8 +9,8 @@
           <div class="relative">
             <select v-model="filters.class" class="appearance-none bg-white pl-4 pr-10 py-2.5 rounded-xl border-0 shadow-md text-blue-700 font-medium focus:ring-2 focus:ring-blue-300 focus:outline-none">
               <option value="">Toutes les classes</option>
-              <option value="terminale">Terminale</option>
-              <option value="premiere">Première</option>
+              <option value="terminale">G-INF1</option>
+              <option value="premiere">G-INF2</option>
             </select>
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-blue-500">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -29,8 +29,8 @@
           <div class="relative">
             <select v-model="filters.period" class="appearance-none bg-white pl-4 pr-10 py-2.5 rounded-xl border-0 shadow-md text-blue-700 font-medium focus:ring-2 focus:ring-blue-300 focus:outline-none">
               <option value="">Toute l'année</option>
-              <option value="trimestre1">Trimestre 1</option>
-              <option value="trimestre2">Trimestre 2</option>
+              <option value="trimestre1">Semestre 1</option>
+              <option value="trimestre2">Semetre 2</option>
             </select>
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-blue-500">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>

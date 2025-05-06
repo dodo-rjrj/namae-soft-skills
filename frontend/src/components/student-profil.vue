@@ -21,7 +21,7 @@
           
           <div class="action-buttons">
             <button class="btn-report" @click="reportStudent">signaler</button>
-            <button class="btn-evaluate" @click="evaluateStudent">evaluer</button>
+            <Router-link to="/prof-evaluation" class="btn-evaluate" >Evaluer</Router-link>
           </div>
         </div>
         
@@ -135,7 +135,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import SoftSkillCards from './components/SoftSkillCards.vue'
+import SoftSkillCards from './SoftSkillCards.vue'
 
 // Student data
 const student = ref({

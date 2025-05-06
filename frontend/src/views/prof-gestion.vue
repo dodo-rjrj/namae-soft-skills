@@ -23,7 +23,7 @@ import gestion from '../components/student-history.vue'
   display: flex;
   flex-direction: column;
   height: 100vh;  
-  background-color:#eff6ff;
+  background-color:#ffffff;
 
 }
 

@@ -22,7 +22,7 @@ import Sidebar from '../components/sidebare.vue';
 import Header from '../components/navbar.vue';
 import WelcomeSection from '../components/welcome.vue';
 import SkillSelection from '../components/SkillSelection.vue';
-import EvaluationSection from '../components/EvaluationSection.vue';
+
 
 const selectedSkill = ref(null);
 const evaluationSubmitted = ref(false);

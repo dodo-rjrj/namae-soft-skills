@@ -23,7 +23,7 @@ import profhome from '../components/prof-com.vue'
   display: flex;
   flex-direction: column;
   height: 100vh;  
-  background-color:#eff6ff;
+  background-color:#ffffff;
 
 }
 
