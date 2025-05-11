@@ -77,7 +77,16 @@
 
           <!-- Formulaire Tuteur -->
           <div v-else class="tutor-form space-y-4">
-            <h3 class="text-lg font-semibold">Connexion Tuteur</h3>
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-lg font-semibold">Connexion Tuteur</h3>
+              <button 
+                @click.prevent="isTutorMode = false"
+                class="text-sm px-4 py-1 rounded-full font-semibold text-white transition whitespace-nowrap"
+                style="background: linear-gradient(135deg, #00bcd4 0%, #7e57c2 100%);"
+              >
+                Retour à l'espace étudiant
+              </button>
+            </div>
             <div class="form-group">
               <label>Nom</label>
               <input type="text" v-model="tutor.nom" required class="w-full border p-2 rounded" />
