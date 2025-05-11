@@ -126,7 +126,7 @@
           </div>
 
           <p class="signup-link text-center mt-4 text-sm">
-            Pas encore de compte ? <a href="/register" class="text-blue-600">S'inscrire</a>
+            Pas encore de compte ? <router-link to="/register" class="text-blue-600">S'inscrire</router-link>
           </p>
         </div>
       </div>
@@ -140,6 +140,8 @@
 </template>
 
 <script>
+import { useAuthStore } from '../store/auth'
+
 export default {
   name: 'LoginPage',
   data() {
@@ -220,15 +222,22 @@ export default {
       if (!this.validateForm()) return
       this.isLoading = true
       try {
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        console.log('Login avec:', {
-          email: this.email,
+        const authStore = useAuthStore()
+        console.log('Login avec:', { 
+          email: this.email, 
           password: this.password,
           rememberMe: this.rememberMe
         })
-        // this.$router.push('/dashboard')
+        
+        await authStore.login({
+          email: this.email,
+          password: this.password
+        })
+        
+        // The router.push is handled in the auth store
       } catch (error) {
         console.error('Erreur de connexion:', error)
+        this.errors.password = 'Email ou mot de passe incorrect'
       } finally {
         this.isLoading = false
       }
@@ -239,7 +248,7 @@ export default {
         return
       }
       if (this.tutor.code !== '123456') {
-        alert('Code d’accès invalide.')
+        alert("Code d'accès invalide.")
         return
       }
       console.log('Connexion tuteur :', this.tutor)

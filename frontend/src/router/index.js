@@ -51,8 +51,8 @@ const router = createRouter({
     },
     // Student routes
     {
-      path: '/dashboard',
-      name: 'dashboard',
+      path: '/student-dashboard',
+      name: 'student-dashboard',
       component: () => import('../views/DashboardStudent.vue'),
       meta: { 
         requiresAuth: true,
@@ -106,7 +106,7 @@ const router = createRouter({
       component: () => import('../views/prof-dashboard.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['professor', 'admin'],
+        roles: ['professor'],
         security: {
           noCache: true
         }
@@ -118,7 +118,7 @@ const router = createRouter({
       component: () => import('../views/prof-analyse.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['professor', 'admin'],
+        roles: ['professor'],
         security: {
           noCache: true
         }
@@ -130,7 +130,7 @@ const router = createRouter({
       component: () => import('../views/prof-evaluation.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['professor', 'admin'],
+        roles: ['professor'],
         security: {
           noCache: true
         }
@@ -142,7 +142,7 @@ const router = createRouter({
       component: () => import('../views/prof-gestion.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['professor', 'admin'],
+        roles: ['professor'],
         security: {
           noCache: true
         }
@@ -154,7 +154,7 @@ const router = createRouter({
       component: () => import('../views/prof-student-dossier.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['professor', 'admin'],
+        roles: ['professor'],
         security: {
           noCache: true
         }
@@ -187,7 +187,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/admin-static',
+      path: '/admin-dashboard',
       name: 'admin-static',
       component: () => import('../views/admin-static.vue'),
       meta: { 
@@ -252,9 +252,11 @@ router.beforeEach(async (to, from, next) => {
           if (authStore.isAuthenticated && (to.name === 'login' || to.name === 'register' || to.name === 'home')) {
             // Redirect to appropriate dashboard based on role
             if (authStore.userRole === 'student') {
-              return next({ name: 'dashboard' })
-            } else if (authStore.userRole === 'professor' || authStore.userRole === 'admin') {
+              return next({ name: 'student-dashboard' })
+            } else if (authStore.userRole === 'professor') {
               return next({ name: 'prof-dashboard' })
+            } else if (authStore.userRole === 'admin') {
+              return next({ name: 'admin-static' })
             }
           }
           return next()

@@ -17,7 +17,7 @@
         <template v-if="role === 'student'">
           <!-- Dashboard -->
           <router-link
-            to="/dashboard"
+            to="/student-dashboard"
             class="flex items-center px-4 py-5 cursor-pointer transition-all duration-200 rounded-[15px] hover:bg-blue-50"
             :class="{ 'justify-center': collapsed, 'space-x-3': !collapsed }">
                <svg width="30" height="30" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -99,7 +99,7 @@
         <template v-else-if="role === 'admin'">
           <!-- Dashboard -->
           <router-link
-            to="/admin-static"
+            to="/admin-dashboard"
             class="flex items-center px-4 py-5 cursor-pointer transition-all duration-200 rounded-[15px] hover:bg-blue-50"
             :class="{ 'justify-center': collapsed, 'space-x-3': !collapsed }">
             <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

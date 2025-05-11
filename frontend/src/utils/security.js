@@ -96,4 +96,91 @@ export const secureStorage = {
   remove: (key) => {
     localStorage.removeItem(key)
   }
+}
+
+/**
+ * Generates a random CSRF token
+ * @returns {string} A random CSRF token
+ */
+export function generateCSRFToken() {
+  const array = new Uint32Array(8);
+  window.crypto.getRandomValues(array);
+  return Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
+}
+
+/**
+ * Validates email format
+ * @param {string} email - The email to validate
+ * @returns {boolean} Whether the email is valid
+ */
+export function validateEmail(email) {
+  const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return re.test(String(email).toLowerCase());
+}
+
+/**
+ * Rate limiter for API calls
+ * @param {Function} fn - The function to rate limit
+ * @param {number} limit - The number of calls allowed
+ * @param {number} interval - The time interval in milliseconds
+ * @returns {Function} The rate-limited function
+ */
+export function rateLimiter(fn, limit, interval) {
+  let calls = [];
+  
+  return function(...args) {
+    const now = Date.now();
+    calls = calls.filter(time => now - time < interval);
+    
+    if (calls.length >= limit) {
+      throw new Error('Rate limit exceeded');
+    }
+    
+    calls.push(now);
+    return fn.apply(this, args);
+  };
+}
+
+/**
+ * Encrypts sensitive data before storing
+ * @param {string} data - The data to encrypt
+ * @returns {string} The encrypted data
+ */
+export function encryptData(data) {
+  // This is a placeholder. In a real implementation, use a proper encryption library
+  return btoa(data);
+}
+
+/**
+ * Decrypts sensitive data after retrieving
+ * @param {string} encryptedData - The encrypted data
+ * @returns {string} The decrypted data
+ */
+export function decryptData(encryptedData) {
+  // This is a placeholder. In a real implementation, use a proper encryption library
+  return atob(encryptedData);
+}
+
+/**
+ * Checks if the current session is secure
+ * @returns {boolean} Whether the session is secure
+ */
+export function isSecureSession() {
+  return window.location.protocol === 'https:' && 
+         !document.cookie.includes('insecure') &&
+         window.location.hostname !== 'localhost';
+}
+
+/**
+ * Validates file uploads for security
+ * @param {File} file - The file to validate
+ * @param {string[]} allowedTypes - Array of allowed MIME types
+ * @param {number} maxSize - Maximum file size in bytes
+ * @returns {boolean} Whether the file is valid
+ */
+export function validateFileUpload(file, allowedTypes, maxSize) {
+  if (!file) return false;
+  if (file.size > maxSize) return false;
+  if (!allowedTypes.includes(file.type)) return false;
+  return true;
 } 

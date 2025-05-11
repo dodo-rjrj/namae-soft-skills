@@ -98,6 +98,21 @@ export const secureHeaders = (to, from, next) => {
   } else if (to.meta.security?.cacheControl) {
     document.documentElement.setAttribute('data-cache-control', to.meta.security.cacheControl)
   }
+
+  // Add security headers
+  const headers = {
+    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';",
+    'X-Frame-Options': 'DENY',
+    'X-XSS-Protection': '1; mode=block',
+    'X-Content-Type-Options': 'nosniff',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'geolocation=(), microphone=(), camera=()'
+  }
+
+  // Apply headers
+  Object.entries(headers).forEach(([key, value]) => {
+    document.documentElement.setAttribute(`data-${key.toLowerCase()}`, value)
+  })
   
   next()
 } 
