@@ -82,7 +82,7 @@
                     Modifier
                   </span>
                 </button>
-                <button @click="deleteStudent(student.id)" class="text-red-600 hover:text-red-900 transition-colors duration-150 hover:bg-red-50 px-3 py-1 rounded-md">
+                <button @click="confirmDelete(student.id)" class="text-red-600 hover:text-red-900 transition-colors duration-150 hover:bg-red-50 px-3 py-1 rounded-md">
                   <span class="flex items-center">
                     <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
@@ -218,60 +218,84 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Enhanced Notifications -->
-  <transition name="notification">
-    <div 
-      v-if="notification.show" 
-      :class="{
-        'fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-xl z-50 flex items-center border transform transition-all duration-300': true,
-        'bg-green-100 border-green-500 text-green-800': notification.type === 'success',
-        'bg-red-100 border-red-500 text-red-800': notification.type === 'error',
-        'bg-blue-100 border-blue-500 text-blue-800': notification.type === 'info'
-      }"
-    >
-      <svg 
-        v-if="notification.type === 'success'"
-        class="h-5 w-5 mr-2 text-green-600" 
-        fill="currentColor" 
-        viewBox="0 0 20 20"
-      >
-        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-      </svg>
-      <svg 
-        v-if="notification.type === 'error'"
-        class="h-5 w-5 mr-2 text-red-600" 
-        fill="currentColor" 
-        viewBox="0 0 20 20"
-      >
-        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-      </svg>
-      <svg 
-        v-if="notification.type === 'info'"
-        class="h-5 w-5 mr-2 text-blue-600" 
-        fill="currentColor" 
-        viewBox="0 0 20 20"
-      >
-        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-      </svg>
-      <span class="font-medium">{{ notification.message }}</span>
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showConfirmModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+      <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 transform transition-all animate-modal-appear">
+        <div class="text-center">
+          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+            <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 mt-3">Confirmer la suppression</h3>
+          <p class="text-sm text-gray-500 mt-2">
+            Êtes-vous sûr de vouloir supprimer cet étudiant ? Cette action est irréversible.
+          </p>
+        </div>
+        <div class="mt-5 flex justify-center space-x-4">
+          <button 
+            @click="showConfirmModal = false" 
+            class="bg-white py-2 px-6 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+          >
+            Annuler
+          </button>
+          <button 
+            @click="deleteStudent" 
+            class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all"
+          >
+            Supprimer
+          </button>
+        </div>
+      </div>
     </div>
-  </transition>
+    
+    <!-- Enhanced Notifications -->
+    <transition name="notification">
+      <div 
+        v-if="notification.show" 
+        :class="{
+          'fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-xl z-50 flex items-center border transform transition-all duration-300': true,
+          'bg-green-100 border-green-500 text-green-800': notification.type === 'success',
+          'bg-red-100 border-red-500 text-red-800': notification.type === 'error',
+          'bg-blue-100 border-blue-500 text-blue-800': notification.type === 'info'
+        }"
+      >
+        <svg 
+          v-if="notification.type === 'success'"
+          class="h-5 w-5 mr-2 text-green-600" 
+          fill="currentColor" 
+          viewBox="0 0 20 20"
+        >
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+        </svg>
+        <svg 
+          v-if="notification.type === 'error'"
+          class="h-5 w-5 mr-2 text-red-600" 
+          fill="currentColor" 
+          viewBox="0 0 20 20"
+        >
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+        </svg>
+        <svg 
+          v-if="notification.type === 'info'"
+          class="h-5 w-5 mr-2 text-blue-600" 
+          fill="currentColor" 
+          viewBox="0 0 20 20"
+        >
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+        </svg>
+        <span class="font-medium">{{ notification.message }}</span>
+      </div>
+    </transition>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue'
+import { ref, computed } from 'vue'
 
 // Current date for default value
 const today = new Date().toISOString().split('T')[0]
-
-// Notification system
-const notification = ref({
-  show: false,
-  message: '',
-  type: 'info' // 'success', 'error', 'info'
-})
 
 // Students data
 const students = ref([
@@ -282,8 +306,8 @@ const students = ref([
     email: 'jean.dupont@example.com', 
     date_inscription: '2023-09-01',
     promotion: '2023',
-    filiere: 'Informatique',
-    cycle: 'Licence'
+    filiere: 'Ging1',
+    mot_de_passe: ''
   },
   { 
     id: 2, 
@@ -292,8 +316,8 @@ const students = ref([
     email: 'sophie.lambert@example.com', 
     date_inscription: '2023-09-01',
     promotion: '2022',
-    filiere: 'Mathématiques',
-    cycle: 'Master'
+    filiere: 'GIL2',
+    mot_de_passe: ''
   }
 ])
 
@@ -303,6 +327,15 @@ const searchQuery = ref('')
 // Modal states
 const showAddModal = ref(false)
 const showEditModal = ref(false)
+const showConfirmModal = ref(false)
+const studentToDelete = ref(null)
+
+// Notification state
+const notification = ref({
+  show: false,
+  message: '',
+  type: 'success' // 'success', 'error', 'info'
+})
 
 // Form state
 const form = ref({
@@ -313,9 +346,22 @@ const form = ref({
   mot_de_passe: '',
   date_inscription: today,
   promotion: '',
-  filiere: '',
-  cycle: 'Licence'
+  filiere: 'Ging1'
 })
+
+// Show notification
+const showNotification = (message, type = 'success') => {
+  notification.value = {
+    show: true,
+    message,
+    type
+  }
+  
+  // Hide notification after 4 seconds
+  setTimeout(() => {
+    notification.value.show = false
+  }, 4000)
+}
 
 // Filtered students based on search query
 const filteredStudents = computed(() => {
@@ -330,24 +376,11 @@ const filteredStudents = computed(() => {
   )
 })
 
-// Show notification with enhanced styling
-const showNotification = (message, type = 'success') => {
-  notification.value = {
-    show: true,
-    message,
-    type
-  }
-  
-  // Hide notification after 4 seconds
-  setTimeout(() => {
-    notification.value.show = false
-  }, 4000)
-}
-
 // Close modal and reset form
 const closeModal = () => {
   showAddModal.value = false
   showEditModal.value = false
+  showConfirmModal.value = false
   form.value = {
     id: null,
     nom: '',
@@ -356,8 +389,7 @@ const closeModal = () => {
     mot_de_passe: '',
     date_inscription: today,
     promotion: '',
-    filiere: '',
-    cycle: 'Licence'
+    filiere: 'Ging1'
   }
 }
 
@@ -365,6 +397,20 @@ const closeModal = () => {
 const editStudent = (student) => {
   form.value = { ...student }
   showEditModal.value = true
+}
+
+// Confirm delete student
+const confirmDelete = (id) => {
+  studentToDelete.value = id
+  showConfirmModal.value = true
+}
+
+// Delete student
+const deleteStudent = () => {
+  students.value = students.value.filter(s => s.id !== studentToDelete.value)
+  showConfirmModal.value = false
+  showNotification('Étudiant supprimé avec succès', 'success')
+  studentToDelete.value = null
 }
 
 // Save student (add or update)
@@ -397,73 +443,10 @@ const saveStudent = () => {
   
   closeModal()
 }
-
-// Delete student
-const deleteStudent = (id) => {
-  students.value = students.value.filter(s => s.id !== id)
-  showNotification('Étudiant supprimé avec succès', 'success')
-}
 </script>
 
 <style>
-/* Basic blue theme colors */
-.text-blue-800 {
-  color: #1e40af;
-}
-.bg-blue-500 {
-  background-color: #3b82f6;
-}
-.bg-blue-600 {
-  background-color: #2563eb;
-}
-.bg-blue-700 {
-  background-color: #1d4ed8;
-}
-.bg-indigo-500 {
-  background-color: #6366f1;
-}
-.bg-indigo-600 {
-  background-color: #4f46e5;
-}
-.hover\:bg-blue-700:hover {
-  background-color: #1d4ed8;
-}
-.hover\:bg-indigo-700:hover {
-  background-color: #4338ca;
-}
-.focus\:ring-blue-500:focus {
-  --tw-ring-color: #3b82f6;
-}
-.focus\:border-blue-500:focus {
-  border-color: #3b82f6;
-}
-
-/* Level access badge colors */
-.bg-blue-100 {
-  background-color: #dbeafe;
-}
-.text-blue-800 {
-  color: #1e40af;
-}
-.bg-indigo-100 {
-  background-color: #e0e7ff;
-}
-.text-indigo-800 {
-  color: #3730a3;
-}
-.bg-purple-100 {
-  background-color: #f3e8ff;
-}
-.text-purple-800 {
-  color: #6b21a8;
-}
-
-/* Table hover effect */
-.hover\:bg-blue-50:hover {
-  background-color: #eff6ff;
-}
-
-/* Enhanced notification animation */
+/* Notification animation */
 .notification-enter-active,
 .notification-leave-active {
   transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -496,7 +479,7 @@ const deleteStudent = (id) => {
   color: transparent;
 }
 
-/* Additional animations */
+/* Modal animation */
 @keyframes modal-appear {
   from {
     opacity: 0;
@@ -512,24 +495,9 @@ const deleteStudent = (id) => {
   animation: modal-appear 0.3s ease-out forwards;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #c5c5c5;
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #a0a0a0;
+/* Table hover effect */
+.hover\:bg-blue-50:hover {
+  background-color: #eff6ff;
 }
 
 /* Button hover effects */
@@ -537,49 +505,22 @@ const deleteStudent = (id) => {
   transform: scale(1.05);
 }
 
-/* Additional notification styles */
-.bg-red-100 {
-  background-color: #fee2e2;
-}
-.border-red-500 {
-  border-color: #ef4444;
-}
-.text-red-800 {
-  color: #991b1b;
-}
-.text-red-600 {
-  color: #dc2626;
-}
-
-.bg-green-100 {
-  background-color: #d1fae5;
-}
-.border-green-500 {
-  border-color: #10b981;
-}
-.text-green-800 {
-  color: #065f46;
-}
-.text-green-600 {
-  color: #059669;
-}
-
-/* Animation for action buttons */
-.transform {
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
+/* Transition effects */
 .transition-all {
   transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+}
+.duration-200 {
+  transition-duration: 200ms;
+}
+.duration-300 {
+  transition-duration: 300ms;
 }
 
 /* Background gradients */
 .bg-gradient-to-br {
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
 }
-.from-gray-50 {
+.from-white-50 {
   --tw-gradient-from: #f9fafb;
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(249, 250, 251, 0));
 }
@@ -587,47 +528,11 @@ const deleteStudent = (id) => {
   --tw-gradient-to: #eff6ff;
 }
 
-/* Notification animation */
-.notification-enter-active,
-.notification-leave-active {
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-.notification-enter-from,
-.notification-leave-to {
-  opacity: 0;
-  transform: translate(-50%, 20px);
-}
-
-/* Gradient text */
-.bg-gradient-to-r {
-  background-image: linear-gradient(to right, var(--tw-gradient-stops));
-}
-.from-blue-600 {
-  --tw-gradient-from: #2563eb;
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(37, 99, 235, 0));
-}
-.via-indigo-500 {
-  --tw-gradient-stops: var(--tw-gradient-from), #6366f1, var(--tw-gradient-to, rgba(99, 102, 241, 0));
-}
-.to-blue-700 {
-  --tw-gradient-to: #1d4ed8;
-}
-.bg-clip-text {
-  -webkit-background-clip: text;
-  background-clip: text;
-}
-.text-transparent {
-  color: transparent;
-}
-
-/* Additional transitions */
-.transition {
-  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
-}
-.duration-150 {
-  transition-duration: 150ms;
-}
 /* Shadow effects */
 .shadow-lg {
-  --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px;}
-  </style>
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+.shadow-xl {
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+</style>

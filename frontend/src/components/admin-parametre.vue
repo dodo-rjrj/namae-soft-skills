@@ -96,6 +96,6 @@ function saveWeights () {
 <style>
 /* Palette bleue sobre */
 .text-blue-800 { color:#1e40af }
-.bg-blue-600   { background:#2563eb }
+.bg-blue-600   { background:#1fa65a }
 .bg-blue-700   { background:#1d4ed8 }
 </style>
