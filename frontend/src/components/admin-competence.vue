@@ -398,10 +398,10 @@ function saveCompetence() {
 }
 
 function deleteCompetence(id) {
-  if (confirm('Êtes-vous sûr de vouloir supprimer cette compétence ?')) {
+ 
     competences.value = competences.value.filter(c => c.id !== id)
     showNotification('Succès', 'La compétence a été supprimée avec succès')
-  }
+  
 }
 
 // Critères Methods
