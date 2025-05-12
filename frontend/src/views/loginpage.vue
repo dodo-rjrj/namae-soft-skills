@@ -67,7 +67,7 @@
 </div>
 
 
-            <a href="#" class="text-sm text-blue-600 block text-right mb-4">Mot de passe oublié ?</a>
+           <router-link to="/forgot-password" class="text-sm text-blue-600 block text-right mb-4">Mot de passe oublié ?</router-link>
 
             <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white py-2 rounded hover:opacity-90 transition">
               <span v-if="isLoading" class="loader"></span>

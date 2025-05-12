@@ -2,7 +2,7 @@
 <div class="dashboard bg-white min-h-screen p-4">
   <!-- Header -->
     <div class="mb-6 flex flex-col sm:flex-row justify-between items-center">
-      <h1 class="text-2xl font-bold text-blue-800 mb-3 sm:mb-0">
+    <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-700 bg-clip-text text-transparent">
         <span class="mr-2">📈</span>Tableau de Bord 
       </h1>
       <div class="bg-white rounded-lg shadow p-1">

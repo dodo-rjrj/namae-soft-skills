@@ -2,7 +2,7 @@
     <div class="p-4">
       <!-- En-tête -->
       <div class="mb-4 flex flex-wrap justify-between items-center gap-2 ">
-        <h1 class="text-2xl font-bold text-blue-800 mb-3 sm:mb-0">Gestion des Signalements</h1>
+<h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-700 bg-clip-text text-transparent">Gestion des Signalements</h1>
         <div class="flex gap-2">
           <input 
             type="text" 

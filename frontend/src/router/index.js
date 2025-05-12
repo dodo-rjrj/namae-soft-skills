@@ -37,6 +37,18 @@ const router = createRouter({
         }
       }
     },
+        {
+      path: '/forgot-password',
+      name: 'forgot-password',
+      component: () => import('../views/forgot-password.vue'),
+      meta: { 
+        requiresAuth: false,
+        security: {
+          noCache: true,
+          noStore: true
+        }
+      }
+    },
     {
       path: '/register',
       name: 'register',
@@ -187,7 +199,58 @@ const router = createRouter({
       }
     },
     {
-      path: '/admin-dashboard',
+      path: '/admin-student-management',
+      name: 'admin-student-management',
+      component: () => import('../views/admin-student-managent.vue'),
+      meta: { 
+        requiresAuth: true,
+        roles: ['admin'],
+        security: {
+          noCache: true
+        }
+      }
+    },
+
+
+
+    {
+      path: '/admin-prof-management',
+      name: 'admin-prof-management',
+      component: () => import('../views/admin-prof-management.vue'),
+      meta: { 
+        requiresAuth: true,
+        roles: ['admin'],
+        security: {
+          noCache: true
+        }
+      }
+    },
+    {
+      path: '/admin-admin-management',
+      name: 'admin-admin-management',
+      component: () => import('../views/admin-admin-management.vue'),
+      meta: { 
+        requiresAuth: true,
+        roles: ['admin'],
+        security: {
+          noCache: true
+        }
+      }
+    },
+    {
+      path: '/admin-competence',
+      name: 'admin-competence',
+      component: () => import('../views/admin-competence.vue'),
+      meta: { 
+        requiresAuth: true,
+        roles: ['admin'],
+        security: {
+          noCache: true
+        }
+      }
+    },
+    {
+      path: '/admin-static',
       name: 'admin-static',
       component: () => import('../views/admin-static.vue'),
       meta: { 
