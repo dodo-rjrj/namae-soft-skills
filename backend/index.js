@@ -2,6 +2,7 @@ const express = require('express');
 const sequelize = require('./config/database');
 const utilisateurRoutes = require('./routes/utilisateurRoutes'); // Importer les routes utilisateurs
 const competenceRoutes = require('./routes/competenceRoutes');
+const ponderationRoutes = require('./routes/ponderationRoutes');
 
 const app = express();
 const port = process.env.PORT || 3009; // Port d'écoute
@@ -12,6 +13,8 @@ app.use(express.json());
 // Utilisation des routes pour les utilisateurs
 app.use('/api/utilisateurs', utilisateurRoutes);
 app.use('/api/competences', competenceRoutes);
+app.use('/api/ponderation', ponderationRoutes);
+
 
 // Une route de test pour vérifier que le serveur fonctionne
 app.get('/', (req, res) => {
