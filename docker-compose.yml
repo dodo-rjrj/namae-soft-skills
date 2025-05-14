@@ -19,13 +19,13 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "3001:3000"
+      - "3009:3009"
     volumes:
       - ./backend:/app
       - /app/node_modules  
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=postgres://postgres:anass2012@postgres:5432/softskills_db
     command: npm start
     depends_on:
       - postgres
@@ -35,9 +35,9 @@ services:
     container_name: postgres
     restart: always
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=mydatabase
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=anass2012
+      - POSTGRES_DB=softskills_db
     ports:
       - "5432:5432"
     volumes:

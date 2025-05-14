@@ -1,17 +1,30 @@
 const express = require('express');
+const sequelize = require('./config/database');
+const utilisateurRoutes = require('./routes/utilisateurRoutes'); // Importer les routes utilisateurs
+
 const app = express();
-const port = process.env.PORT || 3000; // Utilise le port de l'environnement ou 3000 par défaut
+const port = process.env.PORT || 3009; // Port d'écoute
 
-// Une route de test
+// Middleware pour parser les requêtes JSON
+app.use(express.json());
+
+// Utilisation des routes pour les utilisateurs
+app.use('/api/utilisateurs', utilisateurRoutes);
+
+// Une route de test pour vérifier que le serveur fonctionne
 app.get('/', (req, res) => {
-  res.send('Hello World!      i am here');
+  res.send('Hello World! I am here');
 });
 
-// Démarre le serveur avec gestion des erreurs
-app.listen(port, (err) => {
-  if (err) {
-    console.error('Error starting server:', err);
-    process.exit(1); // Ferme le processus en cas d'erreur
-  }
-  console.log(`Backend is listening at http://localhost:${port}`);
-});
+// Connexion à la base de données
+sequelize.authenticate()
+  .then(() => {
+    console.log('✅ Connexion à la base de données réussie !');
+    app.listen(port, () => {
+      console.log(`🚀 Backend is listening at http://localhost:${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error('❌ Connexion à la base de données échouée :', err.message);
+    process.exit(1); // Arrêter le serveur si la base de données échoue à se connecter
+  });
