@@ -25,6 +25,9 @@ Evaluation.belongsTo(Utilisateur, { foreignKey: 'id_utilisateur' });
 
 // SessionEvaluation -> Evaluation
 SessionEvaluation.hasMany(Evaluation, { foreignKey: 'id_session' });
+Evaluation.belongsTo(Competence, { foreignKey: 'id_competence', as: 'competence' });
+Competence.hasMany(Evaluation, { foreignKey: 'id_competence', as: 'evaluations' });
+
 Evaluation.belongsTo(SessionEvaluation, { foreignKey: 'id_session' });
 
 // Projet -> Evaluation

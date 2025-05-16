@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { createSelfEvaluation, getEvaluationsByStudent } = require('../controllers/evaluationController');
+const evaluationController = require('../controllers/evaluationController');
 
-// Route : POST /evaluations/self
-router.post('/self', createSelfEvaluation);
-router.get('/evaluations/student/:studentId', getEvaluationsByStudent);
+router.get('/total', evaluationController.getTotalEvaluations);
+router.get('/moyenne', evaluationController.getMoyenneGlobale);
+router.get('/moyenne-par-competence', evaluationController.getMoyenneParCompetence);
 
 module.exports = router;
+

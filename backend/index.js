@@ -4,6 +4,7 @@ const utilisateurRoutes = require('./routes/utilisateurRoutes'); // Importer les
 const competenceRoutes = require('./routes/competenceRoutes');
 const ponderationRoutes = require('./routes/ponderationRoutes');
 const permissionsRoutes = require('./routes/permissionsRoutes');
+const evaluationRoutes = require('./routes/evaluationRoutes');
 
 const app = express();
 const port = process.env.PORT || 3009; // Port d'écoute
@@ -23,6 +24,7 @@ app.use('/api/utilisateurs', utilisateurRoutes);
 app.use('/api/competences', competenceRoutes);
 app.use('/api/ponderation', ponderationRoutes);
 app.use('/api/permissions', permissionsRoutes);
+app.use('/evaluations', evaluationRoutes);
 
 
 // Une route de test pour vérifier que le serveur fonctionne
