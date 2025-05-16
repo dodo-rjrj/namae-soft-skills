@@ -54,3 +54,25 @@ exports.getMoyenneParCompetence = async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 };
+
+exports.getEvaluationsParJour = async (req, res) => {
+  try {
+    const evaluationsParJour = await Evaluation.findAll({
+      attributes: [
+        [sequelize.literal(`TO_CHAR("Evaluation"."date", 'Dy')`), 'jour'],
+        [sequelize.literal(`TO_CHAR("Evaluation"."date", 'D')`), 'ordre'],
+        [sequelize.literal(`COUNT(*)`), 'nombre'],
+      ],
+      group: [
+        sequelize.literal(`TO_CHAR("Evaluation"."date", 'Dy')`),
+        sequelize.literal(`TO_CHAR("Evaluation"."date", 'D')`)
+      ],
+      order: [sequelize.literal(`TO_CHAR("Evaluation"."date", 'D') ASC`)],
+    });
+
+    res.status(200).json(evaluationsParJour);
+  } catch (error) {
+    console.error('Erreur dans getEvaluationsParJour:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+};
