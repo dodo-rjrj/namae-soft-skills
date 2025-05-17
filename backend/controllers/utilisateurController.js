@@ -93,7 +93,7 @@ exports.mettreAJourUtilisateur = async (req, res) => {
   const donnees = req.body;
 
   try {
-    const utilisateur = await Utilisateur.findByPk(id);
+    const utilisateur = await Utilisateur.findOne({ where: { id_utilisateur: id } });
 
     if (!utilisateur) {
       return res.status(404).json({ error: 'Utilisateur non trouvé.' });
