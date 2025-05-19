@@ -1,6 +1,6 @@
 const Utilisateur = require('../models/Utilisateur');
 const { Op } = require('sequelize');
-
+const bcrypt = require('bcryptjs');
 // Fonction pour ajouter un utilisateur
 exports.ajouterUtilisateur = async (req, res) => {
   const {
@@ -22,6 +22,10 @@ exports.ajouterUtilisateur = async (req, res) => {
   if (!nom || !prenom || !email || !role) {
     return res.status(400).json({ error: 'Les champs nom, prénom, email et rôle sont obligatoires.' });
   }
+  // Validation simple du format email
+  if (!email.includes('@') || !email.includes('.')) {
+    return res.status(400).json({ error: 'Email invalide.' });
+  }
 
   // Définir la date d'inscription par défaut à la date actuelle si non fournie
   const dateInscription = date_inscription || new Date();
@@ -29,13 +33,14 @@ exports.ajouterUtilisateur = async (req, res) => {
   try {
     // Générer un mot de passe par défaut
     const motDePasse = genererMotDePasse();
+    const motDePasseHash = await bcrypt.hash(motDePasse, 10);
 
     // Préparer les données de l'utilisateur selon le rôle
     const utilisateurData = {
       nom,
       prenom,
       email,
-      mot_de_passe: motDePasse,
+      mot_de_passe: motDePasseHash,
       role,
       date_inscription: dateInscription
     };

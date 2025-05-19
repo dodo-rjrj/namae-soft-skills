@@ -4,6 +4,7 @@ const competenceRoutes = require('./routes/competenceRoutes');
 const ponderationRoutes = require('./routes/ponderationRoutes');
 const permissionsRoutes = require('./routes/permissionsRoutes');
 const evaluationRoutes = require('./routes/evaluationRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
@@ -16,6 +17,9 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+// Utilisation des routes pour l'authentification
+app.use('/api/auth', authRoutes);
 
 // Utilisation des routes pour les utilisateurs
 app.use('/api/utilisateurs', utilisateurRoutes);
