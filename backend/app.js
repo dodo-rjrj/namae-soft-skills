@@ -4,6 +4,7 @@ const competenceRoutes = require('./routes/competenceRoutes');
 const ponderationRoutes = require('./routes/ponderationRoutes');
 const permissionsRoutes = require('./routes/permissionsRoutes');
 const evaluationRoutes = require('./routes/evaluationRoutes');
+const comportementRoutes = require('./routes/comportementRoutes');
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use('/api/competences', competenceRoutes);
 app.use('/api/ponderation', ponderationRoutes);
 app.use('/api/permissions', permissionsRoutes);
 app.use('/evaluations', evaluationRoutes);
+app.use('/api/comportements', comportementRoutes);
 
 
 // Une route de test pour vérifier que le serveur fonctionne
