@@ -60,7 +60,7 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="prof in filteredProfessors" :key="prof.id_enseignant" class="hover:bg-blue-50 transition-colors duration-150">
+            <tr v-for="prof in filteredProfessors" :key="prof.id_utilisateur" class="hover:bg-blue-50 transition-colors duration-150">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ prof.nom }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ prof.prenom }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ prof.email }}</td>
@@ -73,7 +73,7 @@
                   </svg>
                   Modifier
                 </button>
-                <button @click="confirmDelete(prof.id_enseignant)" class="text-red-600 hover:text-red-900 flex items-center">
+                <button @click="deleteProfessor(prof.id_utilisateur)" class="text-red-600 hover:text-red-900 flex items-center">
                   <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                   </svg>
@@ -147,14 +147,7 @@
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150"
               >
             </div>
-            <div v-if="!showEditModal">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-              <input 
-                type="password"
-                v-model="form.mot_de_passe" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150"
-              >
-            </div>
+           
           </div>
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -204,36 +197,6 @@
       </div>
     </div>
     
-    <!-- Delete confirmation modal -->
-    <div v-if="showConfirmModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <div class="mb-4">
-          <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mx-auto mb-4">
-            <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <h3 class="text-lg font-medium text-center text-gray-900">Confirmation de suppression</h3>
-          <p class="text-sm text-gray-500 text-center mt-2">
-            Êtes-vous sûr de vouloir supprimer ce professeur ? Cette action est irréversible.
-          </p>
-        </div>
-        <div class="flex justify-center space-x-3">
-          <button 
-            @click="showConfirmModal = false" 
-            class="bg-white py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-150"
-          >
-            Annuler
-          </button>
-          <button 
-            @click="deleteProfessor" 
-            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md transition duration-150"
-          >
-            Supprimer
-          </button>
-        </div>
-      </div>
-    </div>
     
     <!-- Notifications -->
     <transition name="notification">
@@ -277,35 +240,18 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import api from '../services/api' // Votre configuration axios existante
 
 const router = useRouter()
 
 // Current date for default value
 const today = new Date().toISOString().split('T')[0]
 
-// Professors data
-const professors = ref([
-  { 
-    id_enseignant: 1, 
-    nom: 'Martin', 
-    prenom: 'Pierre', 
-    email: 'pierre.martin@example.com', 
-    date_inscription: '2023-01-15',
-    specialite: 'Informatique',
-    departement: 'Sciences'
-  },
-  { 
-    id_enseignant: 2, 
-    nom: 'Dubois', 
-    prenom: 'Marie', 
-    email: 'marie.dubois@example.com', 
-    date_inscription: '2022-09-01',
-    specialite: 'Mathématiques',
-    departement: 'Sciences'
-  }
-])
+// Professors data - maintenant chargée depuis l'API
+const professors = ref([])
+const loading = ref(false)
 
 // Search query
 const searchQuery = ref('')
@@ -313,9 +259,6 @@ const searchQuery = ref('')
 // Modal states
 const showAddModal = ref(false)
 const showEditModal = ref(false)
-const showConfirmModal = ref(false)
-const professorToDelete = ref(null)
-const formError = ref('')
 
 // Notification state
 const notification = ref({
@@ -326,15 +269,52 @@ const notification = ref({
 
 // Form state
 const form = ref({
-  id_enseignant: null,
+  id_utilisateur: null,
   nom: '',
   prenom: '',
   email: '',
   mot_de_passe: '',
   date_inscription: today,
   specialite: '',
-  departement: ''
+  departement: '',
+  poste: ''
 })
+
+// Charger les professeurs au démarrage
+onMounted(() => {
+  loadProfessors()
+})
+
+// Fonction pour charger tous les professeurs
+const loadProfessors = async (nomRecherche = '') => {
+  loading.value = true
+  try {
+    console.log('Chargement des professeurs...')
+
+    let url = '/api/utilisateurs'
+    if (nomRecherche && nomRecherche.trim() !== '') {
+      url = `/api/utilisateurs/rechercher?nom=${encodeURIComponent(nomRecherche)}`
+    }
+
+    const response = await api.get(url)
+    console.log('Réponse API professeurs:', response.data)
+
+    // Filtrer seulement les enseignants/professeurs
+    const allUsers = response.data.utilisateurs || response.data || []
+    professors.value = allUsers.filter(user => user.role === 'enseignant' || user.role === 'professeur')
+    
+    console.log('Professeurs filtrés:', professors.value)
+  } catch (error) {
+    console.error('Erreur complète:', error)
+    console.error('Status:', error.response?.status)
+    console.error('Data:', error.response?.data)
+    console.error('URL appelée:', error.config?.url)
+
+    showNotification('Erreur lors du chargement des professeurs', 'error')
+  } finally {
+    loading.value = false
+  }
+}
 
 // Show notification
 const showNotification = (message, type = 'success') => {
@@ -344,23 +324,30 @@ const showNotification = (message, type = 'success') => {
     type
   }
   
-  // Hide notification after 3 seconds
+  // Hide notification after 4 seconds
   setTimeout(() => {
     notification.value.show = false
-  }, 3000)
+  }, 4000)
 }
 
 // Filtered professors based on search query
 const filteredProfessors = computed(() => {
   const query = searchQuery.value.toLowerCase()
-  if (!query) return professors.value
+  if (!query) {
+    // Log pour voir la structure des professeurs
+    if (professors.value.length > 0) {
+      console.log('Structure du premier professeur:', professors.value[0])
+      console.log('Clés disponibles:', Object.keys(professors.value[0]))
+    }
+    return professors.value
+  }
   
   return professors.value.filter(prof => 
-    prof.nom.toLowerCase().includes(query) || 
-    prof.prenom.toLowerCase().includes(query) || 
-    prof.email.toLowerCase().includes(query) ||
-    prof.specialite.toLowerCase().includes(query) ||
-    prof.departement.toLowerCase().includes(query)
+    prof.nom?.toLowerCase().includes(query) || 
+    prof.prenom?.toLowerCase().includes(query) || 
+    prof.email?.toLowerCase().includes(query) ||
+    prof.specialite?.toLowerCase().includes(query) ||
+    prof.departement?.toLowerCase().includes(query)
   )
 })
 
@@ -368,70 +355,141 @@ const filteredProfessors = computed(() => {
 const closeModal = () => {
   showAddModal.value = false
   showEditModal.value = false
-  formError.value = ''
   form.value = {
-    id_enseignant: null,
+    id_utilisateur: null,
     nom: '',
     prenom: '',
     email: '',
     mot_de_passe: '',
     date_inscription: today,
     specialite: '',
-    departement: ''
+    departement: '',
+    poste: ''
   }
 }
 
 // Edit professor
 const editProfessor = (prof) => {
-  form.value = { ...prof }
+  form.value = { 
+    ...prof,
+    date_inscription: prof.date_inscription ? 
+      new Date(prof.date_inscription).toISOString().split('T')[0] : 
+      today
+  }
   showEditModal.value = true
 }
 
-// Confirm delete professor
-const confirmDelete = (id) => {
-  professorToDelete.value = id
-  showConfirmModal.value = true
+// Delete professor directly
+const deleteProfessor = async (id) => {
+  console.log('ID reçu pour suppression:', id)
+  console.log('Type de l\'ID:', typeof id)
+  
+  if (!id) {
+    showNotification('Aucun professeur sélectionné pour suppression', 'error')
+    return
+  }
+
+  loading.value = true
+  try {
+    console.log('Suppression du professeur ID:', id)
+    
+    const response = await api.delete(`/api/utilisateurs/supprimer/${id}`)
+    console.log('Réponse suppression:', response.data)
+    
+    showNotification('Professeur supprimé avec succès', 'success')
+    await loadProfessors()
+  } catch (error) {
+    console.error('Erreur lors de la suppression:', error)
+    console.error('Status:', error.response?.status)
+    console.error('Data:', error.response?.data)
+    
+    const errorMessage = error.response?.data?.error || 
+                        error.response?.data?.message || 
+                        'Erreur lors de la suppression'
+    showNotification(errorMessage, 'error')
+  } finally {
+    loading.value = false
+  }
 }
 
-// Save professor (add or update)
-const saveProfessor = () => {
-  // Validation
+// Save professor (add or update) - maintenant avec API
+const saveProfessor = async () => {
   if (!form.value.nom || !form.value.prenom || !form.value.email) {
-    
     showNotification('Veuillez remplir tous les champs obligatoires', 'error')
     return
   }
-  
-  if (showEditModal.value) {
-    // Update existing professor
-    const index = professors.value.findIndex(p => p.id_enseignant === form.value.id_enseignant)
-    if (index !== -1) {
-      professors.value[index] = { ...form.value }
-      closeModal()
-      showNotification('Professeur mis à jour avec succès')
-    }
-  } else {
-    // Add new professor
-    const maxId = professors.value.length > 0 
-      ? Math.max(...professors.value.map(p => p.id_enseignant)) 
-      : 0
-      
-    professors.value.push({
-      ...form.value,
-      id_enseignant: maxId + 1
-    })
-    
-    closeModal()
-    showNotification('Professeur ajouté avec succès')
-  }
-}
 
-// Delete professor
-const deleteProfessor = () => {
-  professors.value = professors.value.filter(p => p.id_enseignant !== professorToDelete.value)
-  showConfirmModal.value = false
-  professorToDelete.value = null
-  showNotification('Professeur supprimé avec succès')
+  loading.value = true
+
+  try {
+    if (showEditModal.value) {
+      // Mise à jour d'un professeur existant
+      console.log('Modification du professeur ID:', form.value.id_utilisateur)
+      console.log('Données envoyées:', {
+        nom: form.value.nom,
+        prenom: form.value.prenom,
+        email: form.value.email,
+        role: 'enseignant',
+        date_inscription: form.value.date_inscription,
+        specialite: form.value.specialite,
+        departement: form.value.departement,
+        poste: form.value.poste
+      })
+
+      const response = await api.patch(`/api/utilisateurs/modifier/${form.value.id_utilisateur}`, {
+        nom: form.value.nom,
+        prenom: form.value.prenom,
+        email: form.value.email,
+        role: 'enseignant',
+        date_inscription: form.value.date_inscription,
+        promotion: null,
+        filiere: null,
+        cycle: null,
+        specialite: form.value.specialite,
+        departement: form.value.departement,
+        poste: form.value.poste,
+        niveau_access: null
+      })
+      
+      console.log('Réponse modification:', response.data)
+      showNotification('Professeur mis à jour avec succès', 'success')
+
+    } else {
+      // Création d'un nouveau professeur
+      const response = await api.post('/api/utilisateurs/ajouter', {
+        nom: form.value.nom,
+        prenom: form.value.prenom,
+        email: form.value.email,
+        role: 'enseignant',
+        date_inscription: form.value.date_inscription,
+        promotion: null,
+        filiere: null,
+        cycle: null,
+        specialite: form.value.specialite,
+        departement: form.value.departement,
+        poste: form.value.poste,
+        niveau_access: null
+      })
+      
+      console.log('Réponse ajout:', response.data)
+      showNotification(`Professeur ajouté avec succès. Mot de passe: ${response.data.motDePasseGenere}`, 'success')
+    }
+
+    await loadProfessors()
+    closeModal()
+
+  } catch (error) {
+    console.error('Erreur lors de la sauvegarde:', error)
+    console.error('Status:', error.response?.status)
+    console.error('Data:', error.response?.data)
+    
+    const errorMessage = error.response?.data?.error || 
+                        error.response?.data?.message || 
+                        'Erreur lors de la sauvegarde'
+    showNotification(errorMessage, 'error')
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 

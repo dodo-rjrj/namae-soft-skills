@@ -147,14 +147,6 @@
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150"
               >
             </div>
-            <div v-if="!showEditModal">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-              <input 
-                type="password"
-                v-model="form.mot_de_passe" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150"
-              >
-            </div>
           </div>
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -282,32 +274,18 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import api from '../services/api' // Votre configuration axios existante
+
+const router = useRouter()
 
 // Current date for default value
 const today = new Date().toISOString().split('T')[0]
 
-// Administrators data
-const administrators = ref([
-  { 
-    id_administrateur: 1, 
-    nom: 'Leroy', 
-    prenom: 'Thomas', 
-    email: 'thomas.leroy@example.com', 
-    date_inscription: '2023-01-10',
-    poste: 'Directeur des études',
-    niveau_access: 'Complet'
-  },
-  { 
-    id_administrateur: 2, 
-    nom: 'Moreau', 
-    prenom: 'Julie', 
-    email: 'julie.moreau@example.com', 
-    date_inscription: '2022-11-15',
-    poste: 'Secrétaire administrative',
-    niveau_access: 'Intermédiaire'
-  }
-])
+// Administrators data - maintenant chargée depuis l'API
+const administrators = ref([])
+const loading = ref(false)
 
 // Search query
 const searchQuery = ref('')
@@ -327,7 +305,7 @@ const notification = ref({
 
 // Form state
 const form = ref({
-  id_administrateur: null,
+  id_utilisateur: null,
   nom: '',
   prenom: '',
   email: '',
@@ -337,6 +315,42 @@ const form = ref({
   niveau_access: 'Basique'
 })
 
+// Charger les administrateurs au démarrage
+onMounted(() => {
+  loadAdministrators()
+})
+
+// Fonction pour charger tous les administrateurs
+const loadAdministrators = async (nomRecherche = '') => {
+  loading.value = true
+  try {
+    console.log('Chargement des administrateurs...')
+
+    let url = '/api/utilisateurs'
+    if (nomRecherche && nomRecherche.trim() !== '') {
+      url = `/api/utilisateurs/rechercher?nom=${encodeURIComponent(nomRecherche)}`
+    }
+
+    const response = await api.get(url)
+    console.log('Réponse API administrateurs:', response.data)
+
+    // Filtrer seulement les administrateurs
+    const allUsers = response.data.utilisateurs || response.data || []
+    administrators.value = allUsers.filter(user => user.role === 'administrateur')
+    
+    console.log('Administrateurs filtrés:', administrators.value)
+  } catch (error) {
+    console.error('Erreur complète:', error)
+    console.error('Status:', error.response?.status)
+    console.error('Data:', error.response?.data)
+    console.error('URL appelée:', error.config?.url)
+
+    showNotification('Erreur lors du chargement des administrateurs', 'error')
+  } finally {
+    loading.value = false
+  }
+}
+
 // Show notification
 const showNotification = (message, type = 'success') => {
   notification.value = {
@@ -345,23 +359,30 @@ const showNotification = (message, type = 'success') => {
     type
   }
   
-  // Hide notification after 3 seconds
+  // Hide notification after 4 seconds
   setTimeout(() => {
     notification.value.show = false
-  }, 3000)
+  }, 4000)
 }
 
 // Filtered administrators based on search query
 const filteredAdmins = computed(() => {
   const query = searchQuery.value.toLowerCase()
-  if (!query) return administrators.value
+  if (!query) {
+    // Log pour voir la structure des administrateurs
+    if (administrators.value.length > 0) {
+      console.log('Structure du premier administrateur:', administrators.value[0])
+      console.log('Clés disponibles:', Object.keys(administrators.value[0]))
+    }
+    return administrators.value
+  }
   
   return administrators.value.filter(admin => 
-    admin.nom.toLowerCase().includes(query) || 
-    admin.prenom.toLowerCase().includes(query) || 
-    admin.email.toLowerCase().includes(query) ||
-    admin.poste.toLowerCase().includes(query) ||
-    admin.niveau_access.toLowerCase().includes(query)
+    admin.nom?.toLowerCase().includes(query) || 
+    admin.prenom?.toLowerCase().includes(query) || 
+    admin.email?.toLowerCase().includes(query) ||
+    admin.poste?.toLowerCase().includes(query) ||
+    admin.niveau_access?.toLowerCase().includes(query)
   )
 })
 
@@ -369,8 +390,9 @@ const filteredAdmins = computed(() => {
 const closeModal = () => {
   showAddModal.value = false
   showEditModal.value = false
+  showDeleteModal.value = false
   form.value = {
-    id_administrateur: null,
+    id_utilisateur: null,
     nom: '',
     prenom: '',
     email: '',
@@ -383,54 +405,136 @@ const closeModal = () => {
 
 // Edit administrator
 const editAdmin = (admin) => {
-  form.value = { ...admin }
+  form.value = { 
+    ...admin,
+    date_inscription: admin.date_inscription ? 
+      new Date(admin.date_inscription).toISOString().split('T')[0] : 
+      today
+  }
   showEditModal.value = true
 }
 
 // Confirm delete administrator
 const confirmDeleteAdmin = (admin) => {
-  adminToDelete.value = admin.id_administrateur
+  adminToDelete.value = admin.id_utilisateur || admin.id_administrateur
   showDeleteModal.value = true
 }
 
-// Save administrator (add or update)
-const saveAdmin = () => {
-  // Validation
+// Delete administrator directly
+const deleteAdmin = async () => {
+  console.log('ID reçu pour suppression:', adminToDelete.value)
+  console.log('Type de l\'ID:', typeof adminToDelete.value)
+  
+  if (!adminToDelete.value) {
+    showNotification('Aucun administrateur sélectionné pour suppression', 'error')
+    return
+  }
+
+  loading.value = true
+  try {
+    console.log('Suppression de l\'administrateur ID:', adminToDelete.value)
+    
+    const response = await api.delete(`/api/utilisateurs/supprimer/${adminToDelete.value}`)
+    console.log('Réponse suppression:', response.data)
+    
+    showNotification('Administrateur supprimé avec succès', 'success')
+    await loadAdministrators()
+    
+    // Fermer le modal et réinitialiser
+    showDeleteModal.value = false
+    adminToDelete.value = null
+    
+  } catch (error) {
+    console.error('Erreur lors de la suppression:', error)
+    console.error('Status:', error.response?.status)
+    console.error('Data:', error.response?.data)
+    
+    const errorMessage = error.response?.data?.error || 
+                        error.response?.data?.message || 
+                        'Erreur lors de la suppression'
+    showNotification(errorMessage, 'error')
+  } finally {
+    loading.value = false
+  }
+}
+
+// Save administrator (add or update) - maintenant avec API
+const saveAdmin = async () => {
   if (!form.value.nom || !form.value.prenom || !form.value.email) {
     showNotification('Veuillez remplir tous les champs obligatoires', 'error')
     return
   }
-  
-  if (showEditModal.value) {
-    // Update existing administrator
-    const index = administrators.value.findIndex(a => a.id_administrateur === form.value.id_administrateur)
-    if (index !== -1) {
-      administrators.value[index] = { ...form.value }
-      closeModal()
-      showNotification('Administrateur mis à jour avec succès')
-    }
-  } else {
-    // Add new administrator
-    const maxId = administrators.value.length > 0 
-      ? Math.max(...administrators.value.map(a => a.id_administrateur)) 
-      : 0
-      
-    administrators.value.push({
-      ...form.value,
-      id_administrateur: maxId + 1
-    })
-    
-    closeModal()
-    showNotification('Administrateur ajouté avec succès')
-  }
-}
 
-// Delete administrator
-const deleteAdmin = () => {
-  administrators.value = administrators.value.filter(a => a.id_administrateur !== adminToDelete.value)
-  showDeleteModal.value = false
-  adminToDelete.value = null
-  showNotification('Administrateur supprimé avec succès')
+  loading.value = true
+
+  try {
+    if (showEditModal.value) {
+      // Mise à jour d'un administrateur existant
+      console.log('Modification de l\'administrateur ID:', form.value.id_utilisateur)
+      console.log('Données envoyées:', {
+        nom: form.value.nom,
+        prenom: form.value.prenom,
+        email: form.value.email,
+        role: 'administrateur',
+        date_inscription: form.value.date_inscription,
+        poste: form.value.poste,
+        niveau_access: form.value.niveau_access
+      })
+
+      const response = await api.patch(`/api/utilisateurs/modifier/${form.value.id_utilisateur}`, {
+        nom: form.value.nom,
+        prenom: form.value.prenom,
+        email: form.value.email,
+        role: 'administrateur',
+        date_inscription: form.value.date_inscription,
+        promotion: null,
+        filiere: null,
+        cycle: null,
+        specialite: null,
+        departement: null,
+        poste: form.value.poste,
+        niveau_access: form.value.niveau_access
+      })
+      
+      console.log('Réponse modification:', response.data)
+      showNotification('Administrateur mis à jour avec succès', 'success')
+
+    } else {
+      // Création d'un nouvel administrateur
+      const response = await api.post('/api/utilisateurs/ajouter', {
+        nom: form.value.nom,
+        prenom: form.value.prenom,
+        email: form.value.email,
+        role: 'administrateur',
+        date_inscription: form.value.date_inscription,
+        promotion: null,
+        filiere: null,
+        cycle: null,
+        specialite: null,
+        departement: null,
+        poste: form.value.poste,
+        niveau_access: form.value.niveau_access
+      })
+      
+      console.log('Réponse ajout:', response.data)
+      showNotification(`Administrateur ajouté avec succès. Mot de passe: ${response.data.motDePasseGenere}`, 'success')
+    }
+
+    await loadAdministrators()
+    closeModal()
+
+  } catch (error) {
+    console.error('Erreur lors de la sauvegarde:', error)
+    console.error('Status:', error.response?.status)
+    console.error('Data:', error.response?.data)
+    
+    const errorMessage = error.response?.data?.error || 
+                        error.response?.data?.message || 
+                        'Erreur lors de la sauvegarde'
+    showNotification(errorMessage, 'error')
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 

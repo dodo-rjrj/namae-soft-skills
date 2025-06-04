@@ -267,7 +267,8 @@ const loading = ref(false)
 const notification = ref({
   show: false,
   title: '',
-  message: ''
+  message: '',
+  type: 'info' // Ajout du type pour différents styles
 })
 const showCompetenceModal = ref(false)
 const editingCompetence = ref(null)
@@ -280,108 +281,306 @@ const competenceForm = ref({
 
 // Computed
 const filteredCompetences = computed(() => {
+  if (!competenceFilter.value.search) return competences.value
+  
+  const searchTerm = competenceFilter.value.search.toLowerCase().trim()
   return competences.value.filter(competence => {
-    const searchTerm = competenceFilter.value.search.toLowerCase()
     return (
-      !competenceFilter.value.search ||
-      competence.nom.toLowerCase().includes(searchTerm) ||
-      (competence.description && 
-       competence.description.toLowerCase().includes(searchTerm))
+      competence.nom?.toLowerCase().includes(searchTerm) ||
+      competence.description?.toLowerCase().includes(searchTerm)
     )
   })
 })
 
-// Méthodes
-function showNotif(title, msg) {
-  notification.value = { show: true, title, message: msg }
-  setTimeout(() => notification.value.show = false, 3000)
+// Méthodes utilitaires
+function showNotif(title, msg, type = 'info') {
+  notification.value = { 
+    show: true, 
+    title, 
+    message: msg, 
+    type 
+  }
+  setTimeout(() => {
+    notification.value.show = false
+  }, 3000)
 }
 
 function resetFilters() {
   competenceFilter.value = { search: '' }
 }
 
+function resetForm() {
+  competenceForm.value = { 
+    name: '', 
+    description: '', 
+    criteres: [] 
+  }
+  editingCompetence.value = null
+}
+
+// Méthodes API
 async function fetchCompetences() {
+  console.log('=== CHARGEMENT DES COMPÉTENCES ===')
+  loading.value = true
+  
   try {
-    loading.value = true
-    const response = await api.get('/competences/rechercher')
-    competences.value = response.data.map(c => ({
-      ...c,
-      name: c.nom, // Mapping pour votre interface qui utilise 'name'
-      id: c.id_competence // Mapping pour votre interface qui utilise 'id'
-    }))
+    const response = await api.get('/api/competences/rechercher')
+    console.log('✅ Réponse API:', response.data)
+    
+    if (Array.isArray(response.data)) {
+      competences.value = response.data.map(c => ({
+        ...c,
+        // Normalisation des propriétés
+        name: c.nom || c.name,
+        id: c.id_competence || c.id,
+        description: c.description || '',
+        criteres: c.criteres || []
+      }))
+      console.log(`✅ ${competences.value.length} compétences chargées`)
+    } else {
+      console.warn('⚠️ Format de données inattendu:', response.data)
+      competences.value = []
+    }
+    
   } catch (error) {
-    console.error('Fetch error:', error)
-    showNotif('Erreur', error.response?.data?.error || 'Échec du chargement')
+    console.error('❌ Erreur lors du chargement:', error)
+    console.error('Status:', error.response?.status)
+    console.error('Data:', error.response?.data)
+    
+    const errorMessage = error.response?.data?.error || 
+                        error.response?.data?.message || 
+                        'Erreur lors du chargement des compétences'
+    showNotif('Erreur', errorMessage, 'error')
+    competences.value = []
+    
   } finally {
     loading.value = false
+    console.log('=== FIN CHARGEMENT ===')
   }
 }
 
 function openCompetenceModal(competence = null) {
+  console.log('Ouverture modal pour:', competence)
+  
   editingCompetence.value = competence
-  competenceForm.value = competence 
-    ? { 
-        name: competence.nom, // Mapping pour le formulaire
-        description: competence.description || '', 
-        criteres: competence.criteres || [] 
-      }
-    : { name: '', description: '', criteres: [] }
+  
+  if (competence) {
+    // Mode édition
+    competenceForm.value = { 
+      name: competence.nom || competence.name || '', 
+      description: competence.description || '', 
+      criteres: Array.isArray(competence.criteres) ? [...competence.criteres] : []
+    }
+  } else {
+    // Mode création
+    resetForm()
+  }
+  
   showCompetenceModal.value = true
 }
 
+function closeCompetenceModal() {
+  showCompetenceModal.value = false
+  resetForm()
+}
+
 async function saveCompetence() {
+  console.log('=== SAUVEGARDE COMPÉTENCE ===')
+  console.log('Données du formulaire:', competenceForm.value)
+  
+  // Validation
+  if (!competenceForm.value.name?.trim()) {
+    showNotif('Attention', 'Le nom de la compétence est obligatoire', 'warning')
+    return
+  }
+
+  loading.value = true
+  
   try {
-    if (!competenceForm.value.name) {
-      showNotif('Attention', 'Le nom est obligatoire')
-      return
-    }
-
     const payload = {
-      nom: competenceForm.value.name, // Mapping pour l'API qui attend 'nom'
-      description: competenceForm.value.description
+      nom: competenceForm.value.name.trim(),
+      description: competenceForm.value.description?.trim() || '',
+      criteres: competenceForm.value.criteres || []
     }
+    
+    console.log('Payload envoyé:', payload)
 
+    let response
     if (editingCompetence.value) {
-      await api.put(`/competences/${editingCompetence.value.id_competence}`, payload)
-      showNotif('Succès', 'Compétence mise à jour')
+      // Mise à jour
+      const id = editingCompetence.value.id_competence || editingCompetence.value.id
+      console.log('Mise à jour compétence ID:', id)
+      
+      response = await api.put(`/api/competences/${id}`, payload)
+      showNotif('Succès', 'Compétence mise à jour avec succès', 'success')
+      
     } else {
-      await api.post('/competences/ajouter', payload)
-      showNotif('Succès', 'Nouvelle compétence ajoutée')
+      // Création
+      console.log('Création nouvelle compétence')
+      response = await api.post('/api/competences/ajouter', payload)
+      showNotif('Succès', 'Compétence créée avec succès', 'success')
     }
-
+    
+    console.log('✅ Réponse serveur:', response.data)
+    
+    // Fermer le modal et recharger
+    closeCompetenceModal()
     await fetchCompetences()
-    showCompetenceModal.value = false
+    
   } catch (error) {
-    console.error('Save error:', error)
-    showNotif('Erreur', error.response?.data?.error || 'Échec de la sauvegarde')
+    console.error('❌ Erreur sauvegarde:', error)
+    console.error('Status:', error.response?.status)
+    console.error('Data:', error.response?.data)
+    
+    let errorMessage = 'Erreur lors de la sauvegarde'
+    
+    if (error.response?.status === 400) {
+      errorMessage = error.response.data?.error || 'Données invalides'
+    } else if (error.response?.status === 401) {
+      errorMessage = 'Non autorisé - Veuillez vous reconnecter'
+    } else if (error.response?.status === 403) {
+      errorMessage = 'Permissions insuffisantes'
+    } else if (error.response?.data?.error) {
+      errorMessage = error.response.data.error
+    }
+    
+    showNotif('Erreur', errorMessage, 'error')
+    
+  } finally {
+    loading.value = false
+    console.log('=== FIN SAUVEGARDE ===')
+  }
+}
+
+function confirmDeleteCompetence(competence) {
+  const name = competence.nom || competence.name || 'cette compétence'
+  if (confirm(`Êtes-vous sûr de vouloir supprimer "${name}" ?\n\nCette action est irréversible.`)) {
+    deleteCompetence(competence.id_competence || competence.id)
   }
 }
 
 async function deleteCompetence(id) {
-  try {
-    await api.delete(`/competences/${id}`)
-    showNotif('Succès', 'Compétence supprimée')
-    await fetchCompetences()
-  } catch (error) {
-    console.error('Delete error:', error)
-    showNotif('Erreur', error.response?.data?.error || 'Échec de la suppression')
+  console.log('=== SUPPRESSION COMPÉTENCE ===')
+  console.log('ID à supprimer:', id)
+  
+  if (!id) {
+    showNotif('Erreur', 'Aucune compétence sélectionnée', 'error')
+    return
   }
+
+  loading.value = true
+  
+  // Endpoints possibles à tester
+  const endpoints = [
+    `/competences/${id}`,
+    `/competences/supprimer/${id}`,
+    `/api/competences/${id}`,
+    `/api/competences/supprimer/${id}`
+  ]
+  
+  for (const endpoint of endpoints) {
+    try {
+      console.log(`Tentative suppression avec: ${endpoint}`)
+      
+      const response = await api.delete(endpoint)
+      console.log('✅ Suppression réussie:', response.data)
+      
+      showNotif('Succès', 'Compétence supprimée avec succès', 'success')
+      
+      // Suppression optimiste côté frontend
+      competences.value = competences.value.filter(c => 
+        (c.id_competence || c.id) !== id
+      )
+      
+      // Puis rechargement pour synchroniser
+      await fetchCompetences()
+      loading.value = false
+      return
+      
+    } catch (error) {
+      console.log(`❌ Échec avec ${endpoint}:`, error.response?.status)
+      
+      // Si c'est le dernier endpoint et qu'il échoue
+      if (endpoint === endpoints[endpoints.length - 1]) {
+        console.error('❌ Toutes les tentatives ont échoué:', error)
+        
+        let errorMessage = 'Erreur lors de la suppression'
+        
+        if (error.response?.status === 404) {
+          errorMessage = 'Compétence non trouvée'
+        } else if (error.response?.status === 401) {
+          errorMessage = 'Non autorisé - Veuillez vous reconnecter'
+        } else if (error.response?.status === 403) {
+          errorMessage = 'Permissions insuffisantes'
+        } else if (error.response?.data?.error) {
+          errorMessage = error.response.data.error
+        }
+        
+        showNotif('Erreur', errorMessage, 'error')
+      }
+    }
+  }
+  
+  loading.value = false
+  console.log('=== FIN SUPPRESSION ===')
 }
+
 
 function addCritere() {
   competenceForm.value.criteres.push({ 
-    id: Date.now(), 
-    titre: '' 
+    id: Date.now(),
+    titre: '',
+    description: ''
   })
+  console.log('Critère ajouté, total:', competenceForm.value.criteres.length)
 }
 
 function removeCritere(index) {
-  competenceForm.value.criteres.splice(index, 1)
+  if (index >= 0 && index < competenceForm.value.criteres.length) {
+    competenceForm.value.criteres.splice(index, 1)
+    console.log(`Critère ${index} supprimé, restant:`, competenceForm.value.criteres.length)
+  }
+}
+
+// Méthodes d'export (optionnel)
+function exportCompetences() {
+  try {
+    const dataStr = JSON.stringify(competences.value, null, 2)
+    const dataBlob = new Blob([dataStr], { type: 'application/json' })
+    const url = URL.createObjectURL(dataBlob)
+    
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `competences_${new Date().toISOString().split('T')[0]}.json`
+    link.click()
+    
+    URL.revokeObjectURL(url)
+    showNotif('Succès', 'Compétences exportées', 'success')
+  } catch (error) {
+    console.error('Erreur export:', error)
+    showNotif('Erreur', 'Erreur lors de l\'export', 'error')
+  }
 }
 
 // Initialisation
-onMounted(fetchCompetences)
+onMounted(() => {
+  console.log('🚀 Composant monté, chargement des compétences...')
+  fetchCompetences()
+})
+
+// Exposition des méthodes pour le template
+defineExpose({
+  fetchCompetences,
+  openCompetenceModal,
+  closeCompetenceModal,
+  saveCompetence,
+  confirmDeleteCompetence,
+  deleteCompetence,
+  addCritere,
+  removeCritere,
+  exportCompetences,
+  resetFilters
+})
 </script>
 
 <style>

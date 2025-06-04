@@ -4,7 +4,7 @@
       <!-- Header -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
-          <h1 class="text-3xl font-bold bg-gradient-to-r from-red-600 via-orange-500 to-red-700 bg-clip-text text-transparent">
+          <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-500 to-blue-700 bg-clip-text text-transparent">
             Gestion des Signalements
           </h1>
           <p class="mt-1 text-sm text-gray-600">
@@ -13,7 +13,7 @@
         </div>
         <button 
           @click="openSignalementModal()" 
-          class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105 flex items-center"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105 flex items-center"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
@@ -24,9 +24,9 @@
 
       <!-- Statistiques -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white p-6 rounded-xl shadow-lg border border-red-100">
+        <div class="bg-white p-6 rounded-xl shadow-lg border border-blue-100">
           <div class="flex items-center">
-            <div class="p-3 rounded-full bg-red-100 text-red-600">
+            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
@@ -82,7 +82,7 @@
       </div>
 
       <!-- Filtres -->
-      <div class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-red-100">
+      <div class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-blue-100">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Recherche</label>
@@ -95,7 +95,7 @@
               <input 
                 v-model="filters.search" 
                 placeholder="Étudiant, signaleur..."
-                class="pl-10 w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                class="pl-10 w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
             </div>
           </div>
@@ -104,7 +104,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">Type de comportement</label>
             <select 
               v-model="filters.type" 
-              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Tous les types</option>
               <option value="desengagement">Désengagement</option>
@@ -121,7 +121,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
             <select 
               v-model="filters.statut" 
-              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Tous les statuts</option>
               <option value="nouveau">Nouveau</option>
@@ -146,22 +146,22 @@
       </div>
 
       <!-- Liste des signalements -->
-      <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-red-100">
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-blue-100">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead>
-              <tr class="bg-red-50">
-                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-red-700 uppercase tracking-wider">Étudiant</th>
-                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-red-700 uppercase tracking-wider">Type</th>
-                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-red-700 uppercase tracking-wider">Signaleur</th>
-                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-red-700 uppercase tracking-wider">Date</th>
-                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-red-700 uppercase tracking-wider">Statut</th>
-                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-red-700 uppercase tracking-wider">Priorité</th>
-                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-red-700 uppercase tracking-wider">Actions</th>
+              <tr class="bg-blue-50">
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Étudiant</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Type</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Signaleur</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Date</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Statut</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Priorité</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="signalement in filteredSignalements" :key="signalement.id" class="hover:bg-red-50 transition-colors duration-150">
+              <tr v-for="signalement in filteblueSignalements" :key="signalement.id" class="hover:bg-blue-50 transition-colors duration-150">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
                     <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
@@ -198,7 +198,7 @@
                   <div class="flex space-x-2">
                     <button 
                       @click="openDetailModal(signalement)" 
-                      class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition-colors duration-200"
+                      class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition-colors duration-200"
                       title="Voir détails"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -219,7 +219,7 @@
                   </div>
                 </td>
               </tr>
-              <tr v-if="filteredSignalements.length === 0">
+              <tr v-if="filteblueSignalements.length === 0">
                 <td colspan="7" class="px-6 py-12 text-center text-sm text-gray-500 bg-gray-50">
                   <div class="flex flex-col items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -228,7 +228,7 @@
                     <p class="text-lg font-medium text-gray-600">Aucun signalement trouvé</p>
                     <button 
                       @click="resetFilters" 
-                      class="mt-3 text-red-600 hover:text-red-800 text-sm font-medium"
+                      class="mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium"
                     >
                       Réinitialiser les filtres
                     </button>
@@ -244,7 +244,7 @@
     <!-- Modal Nouveau Signalement -->
     <div v-if="showSignalementModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto" @click.stop>
-        <div class="p-6 border-b border-gray-200 bg-red-50">
+        <div class="p-6 border-b border-gray-200 bg-blue-50">
           <div class="flex justify-between items-center">
             <h3 class="text-xl font-semibold text-gray-900">Nouveau signalement</h3>
             <button 
@@ -265,7 +265,7 @@
               <input 
                 type="text" 
                 v-model="signalementForm.etudiant" 
-                class="block w-full border border-gray-300 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                class="block w-full border border-gray-300 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 placeholder="Nom de l'étudiant"
               >
             </div>
@@ -275,7 +275,7 @@
               <input 
                 type="text" 
                 v-model="signalementForm.classe" 
-                class="block w-full border border-gray-300 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                class="block w-full border border-gray-300 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 placeholder="Classe de l'étudiant"
               >
             </div>
@@ -286,7 +286,7 @@
               <label class="block text-sm font-medium text-gray-700 mb-1">Type de comportement *</label>
               <select 
                 v-model="signalementForm.type" 
-                class="block w-full border border-gray-300 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                class="block w-full border border-gray-300 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               >
                 <option value="">Sélectionner un type</option>
                 <option value="desengagement">Désengagement</option>
@@ -303,7 +303,7 @@
               <label class="block text-sm font-medium text-gray-700 mb-1">Priorité</label>
               <select 
                 v-model="signalementForm.priorite" 
-                class="block w-full border border-gray-300 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                class="block w-full border border-gray-300 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               >
                 <option value="Faible">Faible</option>
                 <option value="Moyenne">Moyenne</option>
@@ -318,7 +318,7 @@
             <textarea 
               v-model="signalementForm.description" 
               rows="4"
-              class="block w-full border border-gray-300 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm"
+              class="block w-full border border-gray-300 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               placeholder="Décrivez de manière claire et objective la situation observée..."
             ></textarea>
           </div>
@@ -328,7 +328,7 @@
             <textarea 
               v-model="signalementForm.contexte" 
               rows="3"
-              class="block w-full border border-gray-300 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm"
+              class="block w-full border border-gray-300 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               placeholder="Contexte dans lequel le comportement a été observé..."
             ></textarea>
           </div>
@@ -338,7 +338,7 @@
               type="checkbox" 
               id="confidentiel" 
               v-model="signalementForm.confidentiel" 
-              class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             >
             <label for="confidentiel" class="ml-2 block text-sm text-gray-900">
               Signalement confidentiel (accès restreint aux encadrants habilités)
@@ -349,13 +349,13 @@
         <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
           <button 
             @click="showSignalementModal = false" 
-            class="bg-white py-2.5 px-5 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200"
+            class="bg-white py-2.5 px-5 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
           >
             Annuler
           </button>
           <button 
             @click="saveSignalement" 
-            class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
           >
             Créer le signalement
           </button>
@@ -366,7 +366,7 @@
     <!-- Modal Détail Signalement -->
     <div v-if="showDetailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" @click.stop>
-        <div class="p-6 border-b border-gray-200 bg-red-50">
+        <div class="p-6 border-b border-gray-200 bg-blue-50">
           <div class="flex justify-between items-center">
             <h3 class="text-xl font-semibold text-gray-900">Détail du signalement</h3>
             <button 
@@ -470,7 +470,7 @@
                 <div class="space-y-3">
                   <select 
                     v-model="selectedSignalement.statut" 
-                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="nouveau">Nouveau</option>
                     <option value="en_cours">En cours</option>
@@ -479,7 +479,7 @@
                   </select>
                   <button 
                     @click="updateStatut" 
-                    class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200"
                   >
                     Mettre à jour le statut
                   </button>
@@ -578,7 +578,7 @@
 
     <!-- Notification -->
     <transition name="notification">
-      <div v-if="notification.show" class="fixed bottom-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-xl z-50 flex items-center max-w-md">
+      <div v-if="notification.show" class="fixed bottom-4 right-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg shadow-xl z-50 flex items-center max-w-md">
         <svg class="h-6 w-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
         </svg>
@@ -699,7 +699,7 @@ const filters = ref<Filters>({
   statut: ''
 })
 
-const filteredSignalements = computed(() => {
+const filteblueSignalements = computed(() => {
   return signalements.value.filter(signalement => {
     const matchesSearch = !filters.value.search || 
       signalement.etudiant.toLowerCase().includes(filters.value.search.toLowerCase()) || 
@@ -916,8 +916,8 @@ function getTypeLabel(type: string): string {
 function getTypeClass(type: string): string {
   const classes: Record<string, string> = {
     'desengagement': 'bg-yellow-100 text-yellow-800',
-    'conflit': 'bg-red-100 text-red-800',
-    'agressivite': 'bg-red-100 text-red-800',
+    'conflit': 'bg-blue-100 text-blue-800',
+    'agressivite': 'bg-blue-100 text-blue-800',
     'isolement': 'bg-blue-100 text-blue-800',
     'participation': 'bg-orange-100 text-orange-800',
     'retard': 'bg-purple-100 text-purple-800',
@@ -938,7 +938,7 @@ function getStatutLabel(statut: string): string {
 
 function getStatutClass(statut: string): string {
   const classes: Record<string, string> = {
-    'nouveau': 'bg-red-100 text-red-800',
+    'nouveau': 'bg-blue-100 text-blue-800',
     'en_cours': 'bg-orange-100 text-orange-800',
     'resolu': 'bg-green-100 text-green-800',
     'archive': 'bg-gray-100 text-gray-800'
@@ -951,7 +951,7 @@ function getPrioriteClass(priorite: string): string {
     'Faible': 'bg-green-100 text-green-800',
     'Moyenne': 'bg-yellow-100 text-yellow-800',
     'Élevée': 'bg-orange-100 text-orange-800',
-    'Urgente': 'bg-red-100 text-red-800'
+    'Urgente': 'bg-blue-100 text-blue-800'
   }
   return classes[priorite] || 'bg-gray-100 text-gray-800'
 }
@@ -961,7 +961,7 @@ function getActionStatutClass(statut: string): string {
     'Planifié': 'bg-blue-100 text-blue-800',
     'En cours': 'bg-orange-100 text-orange-800',
     'Terminé': 'bg-green-100 text-green-800',
-    'Annulé': 'bg-red-100 text-red-800'
+    'Annulé': 'bg-blue-100 text-blue-800'
   }
   return classes[statut] || 'bg-gray-100 text-gray-800'
 }

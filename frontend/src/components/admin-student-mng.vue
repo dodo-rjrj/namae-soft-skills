@@ -302,10 +302,8 @@ const loadStudents = async (nomRecherche = '') => {
 
     const response = await api.get(url)
     console.log('Réponse API:', response.data)
-
-    // Si on passe par /rechercher, on reçoit un objet { utilisateurs: [...] }
-    // Sinon, c'est un tableau direct
-    students.value = response.data.utilisateurs || response.data || []
+const allUsers = response.data.utilisateurs || response.data || []
+    students.value = allUsers.filter(user => user.role === 'etudiant' )
   } catch (error) {
     console.error('Erreur complète:', error)
     console.error('Status:', error.response?.status)
