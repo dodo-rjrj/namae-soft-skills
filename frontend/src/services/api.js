@@ -3,7 +3,7 @@ import { handleApiError, showErrorNotification } from './errorHandler';
 import { useAuthStore } from '../store/auth';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3009',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3009/',
   headers: {
     'Content-Type': 'application/json',
   },

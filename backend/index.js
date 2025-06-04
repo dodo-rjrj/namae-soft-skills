@@ -1,6 +1,6 @@
 const express = require('express');
 const sequelize = require('./config/database');
-const utilisateurRoutes = require('./routes/utilisateurRoutes'); // Importer les routes utilisateurs
+const utilisateurRoutes = require('./routes/utilisateurRoutes'); 
 const competenceRoutes = require('./routes/competenceRoutes');
 const ponderationRoutes = require('./routes/ponderationRoutes');
 const permissionsRoutes = require('./routes/permissionsRoutes');
@@ -11,10 +11,10 @@ const port = process.env.PORT || 3009; // Port d'écoute
 const cors = require('cors');
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'http://localhost:3000',
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // ✅ accepte toutes les méthodes
-  allowedHeaders: ['Content-Type', 'Authorization'], // ✅ accepte les headers personnalisés
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], 
+  allowedHeaders: ['Content-Type', 'Authorization'], 
 }));
 
 // Middleware pour parser les requêtes JSON

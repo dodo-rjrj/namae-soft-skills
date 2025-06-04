@@ -64,8 +64,8 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="student in filteredStudents" :key="student.id" class="hover:bg-blue-50 transition-colors duration-150">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ student.nom }}</td>
+<tr v-for="student in filteredStudents" :key="student.id_utilisateur" class="hover:bg-blue-50 transition-colors duration-150">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ student.nom }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ student.prenom }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ student.email }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
@@ -82,8 +82,7 @@
                     Modifier
                   </span>
                 </button>
-                <button @click="confirmDelete(student.id)" class="text-red-600 hover:text-red-900 transition-colors duration-150 hover:bg-red-50 px-3 py-1 rounded-md">
-                  <span class="flex items-center">
+<button @click="deleteStudent(student.id_utilisateur)" class="text-red-600 hover:text-red-900 transition-colors duration-150 hover:bg-red-50 px-3 py-1 rounded-md">                  <span class="flex items-center">
                     <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                     </svg>
@@ -208,38 +207,6 @@
       </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div v-if="showConfirmModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
-      <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 transform transition-all animate-modal-appear">
-        <div class="text-center">
-          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-            <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <h3 class="text-lg font-medium text-gray-900 mt-3">Confirmer la suppression</h3>
-          <p class="text-sm text-gray-500 mt-2">
-            Êtes-vous sûr de vouloir supprimer cet étudiant ? Cette action est irréversible.
-          </p>
-        </div>
-        <div class="mt-5 flex justify-center space-x-4">
-          <button 
-            @click="showConfirmModal = false" 
-            class="bg-white py-2 px-6 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150"
-          >
-            Annuler
-          </button>
-          <button 
-            @click="deleteStudent" 
-            class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all"
-          >
-            Supprimer
-          </button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Enhanced Notifications -->
     <transition name="notification">
       <div 
         v-if="notification.show" 
@@ -279,7 +246,6 @@
     </transition>
   </div>
 </template>
-
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import api from '../services/api' // Votre configuration axios existante
@@ -297,8 +263,6 @@ const searchQuery = ref('')
 // Modal states
 const showAddModal = ref(false)
 const showEditModal = ref(false)
-const showConfirmModal = ref(false)
-const studentToDelete = ref(null)
 
 // Notification state
 const notification = ref({
@@ -309,7 +273,7 @@ const notification = ref({
 
 // Form state
 const form = ref({
-  id: null,
+  id_utilisateur: null,
   nom: '',
   prenom: '',
   email: '',
@@ -326,22 +290,28 @@ onMounted(() => {
 })
 
 // Fonction pour charger tous les étudiants
-const loadStudents = async () => {
+const loadStudents = async (nomRecherche = '') => {
   loading.value = true
   try {
     console.log('Test de connexion API...')
-    
-    // Test simple
-    const response = await api.get('/utilisateurs/recherche?nom=')
+
+    let url = '/api/utilisateurs'
+    if (nomRecherche && nomRecherche.trim() !== '') {
+      url = `/api/utilisateurs/rechercher?nom=${encodeURIComponent(nomRecherche)}`
+    }
+
+    const response = await api.get(url)
     console.log('Réponse API:', response.data)
-    
-    students.value = response.data.utilisateurs || []
+
+    // Si on passe par /rechercher, on reçoit un objet { utilisateurs: [...] }
+    // Sinon, c'est un tableau direct
+    students.value = response.data.utilisateurs || response.data || []
   } catch (error) {
     console.error('Erreur complète:', error)
     console.error('Status:', error.response?.status)
     console.error('Data:', error.response?.data)
     console.error('URL appelée:', error.config?.url)
-    
+
     showNotification('Erreur lors du chargement des étudiants', 'error')
   } finally {
     loading.value = false
@@ -365,7 +335,14 @@ const showNotification = (message, type = 'success') => {
 // Filtered students based on search query
 const filteredStudents = computed(() => {
   const query = searchQuery.value.toLowerCase()
-  if (!query) return students.value
+  if (!query) {
+    // Log pour voir la structure des étudiants
+    if (students.value.length > 0) {
+      console.log('Structure du premier étudiant:', students.value[0])
+      console.log('Clés disponibles:', Object.keys(students.value[0]))
+    }
+    return students.value
+  }
 
   return students.value.filter(student => 
     student.nom?.toLowerCase().includes(query) || 
@@ -379,9 +356,8 @@ const filteredStudents = computed(() => {
 const closeModal = () => {
   showAddModal.value = false
   showEditModal.value = false
-  showConfirmModal.value = false
   form.value = {
-    id: null,
+    id_utilisateur: null,
     nom: '',
     prenom: '',
     email: '',
@@ -393,7 +369,6 @@ const closeModal = () => {
   }
 }
 
-// Edit student
 const editStudent = (student) => {
   form.value = { 
     ...student,
@@ -404,33 +379,40 @@ const editStudent = (student) => {
   showEditModal.value = true
 }
 
-// Confirm delete student
-const confirmDelete = (id) => {
-  studentToDelete.value = id
-  showConfirmModal.value = true
-}
+const deleteStudent = async (id) => {
+  console.log('ID reçu pour suppression:', id)
+  console.log('Type de l\'ID:', typeof id)
+  
+  if (!id) {
+    showNotification('Aucun étudiant sélectionné pour suppression', 'error')
+    return
+  }
 
-// Delete student - maintenant avec API
-const deleteStudent = async () => {
   loading.value = true
   try {
-    await api.delete(`/utilisateurs/${studentToDelete.value}`)
+    console.log('Suppression de l\'étudiant ID:', id)
+    
+    const response = await api.delete(`/api/utilisateurs/supprimer/${id}`)
+    console.log('Réponse suppression:', response.data)
+    
     showNotification('Étudiant supprimé avec succès', 'success')
-    await loadStudents() // Recharger la liste
+    await loadStudents()
   } catch (error) {
     console.error('Erreur lors de la suppression:', error)
-    const errorMessage = error.response?.data?.error || 'Erreur lors de la suppression'
+    console.error('Status:', error.response?.status)
+    console.error('Data:', error.response?.data)
+    
+    const errorMessage = error.response?.data?.error || 
+                        error.response?.data?.message || 
+                        'Erreur lors de la suppression'
     showNotification(errorMessage, 'error')
   } finally {
     loading.value = false
-    showConfirmModal.value = false
-    studentToDelete.value = null
   }
 }
 
 // Save student (add or update) - maintenant avec API
 const saveStudent = async () => {
-  // Validation
   if (!form.value.nom || !form.value.prenom || !form.value.email) {
     showNotification('Veuillez remplir tous les champs obligatoires', 'error')
     return
@@ -440,20 +422,9 @@ const saveStudent = async () => {
 
   try {
     if (showEditModal.value) {
-      // Update existing student
-      await api.put(`/utilisateurs/${form.value.id}`, {
-        nom: form.value.nom,
-        prenom: form.value.prenom,
-        email: form.value.email,
-        date_inscription: form.value.date_inscription,
-        promotion: form.value.promotion,
-        filiere: form.value.filiere,
-        cycle: form.value.cycle
-      })
-      showNotification('Étudiant mis à jour avec succès', 'success')
-    } else {
-      // Add new student
-      const response = await api.post('/utilisateurs', {
+      // Mise à jour d'un étudiant existant
+      console.log('Modification de l\'étudiant ID:', form.value.id_utilisateur)
+      console.log('Données envoyées:', {
         nom: form.value.nom,
         prenom: form.value.prenom,
         email: form.value.email,
@@ -463,22 +434,63 @@ const saveStudent = async () => {
         filiere: form.value.filiere,
         cycle: form.value.cycle
       })
+
+      const response = await api.patch(`/api/utilisateurs/modifier/${form.value.id_utilisateur}`, {
+        nom: form.value.nom,
+        prenom: form.value.prenom,
+        email: form.value.email,
+        role: 'etudiant',
+        date_inscription: form.value.date_inscription,
+        promotion: form.value.promotion,
+        filiere: form.value.filiere,
+        cycle: form.value.cycle,
+        specialite: null,
+        departement: null,
+        poste: null,
+        niveau_access: null
+      })
+      
+      console.log('Réponse modification:', response.data)
+      showNotification('Étudiant mis à jour avec succès', 'success')
+
+    } else {
+      // Création d'un nouvel étudiant
+      const response = await api.post('/api/utilisateurs/ajouter', {
+        nom: form.value.nom,
+        prenom: form.value.prenom,
+        email: form.value.email,
+        role: 'etudiant',
+        date_inscription: form.value.date_inscription,
+        promotion: form.value.promotion,
+        filiere: form.value.filiere,
+        cycle: form.value.cycle,
+        specialite: null,
+        departement: null,
+        poste: null,
+        niveau_access: null
+      })
+      
+      console.log('Réponse ajout:', response.data)
       showNotification(`Étudiant ajouté avec succès. Mot de passe: ${response.data.motDePasseGenere}`, 'success')
     }
-    
-    await loadStudents() // Recharger la liste
+
+    await loadStudents()
     closeModal()
-    
+
   } catch (error) {
     console.error('Erreur lors de la sauvegarde:', error)
-    const errorMessage = error.response?.data?.error || 'Erreur lors de la sauvegarde'
+    console.error('Status:', error.response?.status)
+    console.error('Data:', error.response?.data)
+    
+    const errorMessage = error.response?.data?.error || 
+                        error.response?.data?.message || 
+                        'Erreur lors de la sauvegarde'
     showNotification(errorMessage, 'error')
   } finally {
     loading.value = false
   }
 }
 </script>
-
 <style>
 /* Notification animation */
 .notification-enter-active,

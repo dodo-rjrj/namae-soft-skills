@@ -142,16 +142,10 @@ exports.supprimerUtilisateur = async (req, res) => {
 exports.rechercherUtilisateur = async (req, res) => {
   const { nom, email, role } = req.query;
 
-  if (!nom && !email) {
-    return res.status(400).json({ error: 'Veuillez fournir au moins un nom ou un email pour la recherche.' });
-  }
-
-  const whereClause = {
-    [Op.and]: []
-  };
+  const whereClause = { [Op.and]: [] };
 
   if (nom) {
-    whereClause[Op.and].push({ nom: { [Op.iLike]: `%${nom}%` } }); // insensible à la casse
+    whereClause[Op.and].push({ nom: { [Op.iLike]: `%${nom}%` } });
   }
 
   if (email) {
@@ -162,15 +156,22 @@ exports.rechercherUtilisateur = async (req, res) => {
     whereClause[Op.and].push({ role });
   }
 
+  if (whereClause[Op.and].length === 0) {
+    return res.status(400).json({ error: 'Fournissez au moins un critère de recherche.' });
+  }
+
   try {
+    console.log('➡️ whereClause:', JSON.stringify(whereClause, null, 2)); // 🔍 debug dans le terminal
+
     const utilisateurs = await Utilisateur.findAll({ where: whereClause });
 
     res.status(200).json({ utilisateurs });
   } catch (error) {
-    console.error('Erreur lors de la recherche :', error);
-    res.status(500).json({ error: 'Erreur serveur.' });
+    console.error('❌ Sequelize exploded here:', error); // 💥 stacktrace
+    res.status(500).json({ error: 'Erreur serveur lors de la recherche.' });
   }
 };
+
 exports.getAllUtilisateurs = async (req, res) => {
   try {
     const utilisateurs = await Utilisateur.findAll();
