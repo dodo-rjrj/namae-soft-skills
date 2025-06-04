@@ -1,24 +1,24 @@
 <template>
   <div class="admin-panel min-h-screen bg-white-100 ">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- Compétences Header -->
+      <!-- Classes Header -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
-          <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-700 bg-clip-text text-transparent">Gestion des Compétences</h1>
-          <p class="mt-1 text-sm text-gray-600">Gérez les compétences et leurs critères d'évaluation</p>
+          <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 via-violet-500 to-blue-700 bg-clip-text text-transparent">Gestion des Classes</h1>
+          <p class="mt-1 text-sm text-gray-600">Gérez les classes et leurs informations</p>
         </div>
         <button 
-          @click="openCompetenceModal(null)" 
+          @click="openClassModal(null)" 
           class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105 flex items-center"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
           </svg>
-          Ajouter une compétence
+          Ajouter une classe
         </button>
       </div>
       
-      <!-- Compétences Filter -->
+      <!-- Classes Filter -->
       <div class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-blue-100">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
@@ -30,16 +30,37 @@
                 </svg>
               </div>
               <input 
-                v-model="competenceFilter.search" 
+                v-model="classFilter.search" 
                 placeholder="Nom ou description..."
                 class="pl-10 w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
             </div>
           </div>
           
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Niveau</label>
+            <select 
+              v-model="classFilter.niveau" 
+              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">Tous les niveaux</option>
+              <option value="Ging1">Ging1</option>
+              <option value="Ging2">Ging2</option>
+              <option value="Ging3">Ging3</option>
+              <option value="GIL1">GIL1</option>
+              <option value="GIL2">GIL2</option>
+              <option value="GIL3">GIL3</option>
+              <option value="GST">GST</option>
+              <option value="Master">Master</option>
+              <option value="Doctorat">Doctorat</option>
+              <option value="AP1">AP1</option>
+              <option value="AP2">AP2</option>
+            </select>
+          </div>
+          
           <div class="flex items-end">
             <button 
-              @click="resetCompetenceFilters"
+              @click="resetClassFilters"
               class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -48,46 +69,46 @@
               Réinitialiser
             </button>
           </div>
-          
-          <div class="flex items-center justify-end">
-            <div class="bg-blue-100 px-4 py-2.5 rounded-lg flex items-center">
-              <span class="text-sm font-medium text-blue-800">{{ competences.length }} compétence(s)</span>
-            </div>
-          </div>
         </div>
       </div>
       
-      <!-- Compétences Table -->
+      <!-- Classes Table -->
       <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-blue-100">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead>
               <tr class="bg-blue-50">
                 <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Nom</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Niveau</th>
                 <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Description</th>
-                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Critères</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Étudiants</th>
                 <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="competence in filteredCompetences" :key="competence.id" class="hover:bg-blue-50 transition-colors duration-150">
+              <tr v-for="classe in filteredClasses" :key="classe.id" class="hover:bg-blue-50 transition-colors duration-150">
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">{{ competence.name }}</div>
+                  <div class="text-sm font-medium text-gray-900">{{ classe.name }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-medium" :class="getNiveauClass(classe.niveau)">
+                    {{ classe.niveau }}
+                  </span>
                 </td>
                 <td class="px-6 py-4">
-                  <div class="text-sm text-gray-700 line-clamp-2">{{ competence.description }}</div>
+                  <div class="text-sm text-gray-700 line-clamp-2">{{ classe.description }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
                     <span class="bg-blue-100 text-blue-800 py-1 px-2.5 rounded-full text-xs font-semibold">
-                      {{ competence.criteres.length }} critère(s)
+                      {{ classe.etudiants }} étudiant(s)
                     </span>
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div class="flex space-x-2">
                     <button 
-                      @click="openCompetenceModal(competence)" 
+                      @click="openClassModal(classe)" 
                       class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition-colors duration-200"
                       title="Modifier"
                     >
@@ -95,10 +116,9 @@
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                       </svg>
                     </button>
-
                     
                     <button 
-                      @click="deleteCompetence(competence.id)" 
+                      @click="deleteClass(classe.id)" 
                       class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition-colors duration-200"
                       title="Supprimer"
                     >
@@ -109,15 +129,15 @@
                   </div>
                 </td>
               </tr>
-              <tr v-if="filteredCompetences.length === 0">
-                <td colspan="4" class="px-6 py-12 text-center text-sm text-gray-500 bg-gray-50">
+              <tr v-if="filteredClasses.length === 0">
+                <td colspan="5" class="px-6 py-12 text-center text-sm text-gray-500 bg-gray-50">
                   <div class="flex flex-col items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <p class="text-lg font-medium text-gray-600">Aucune compétence trouvée</p>
+                    <p class="text-lg font-medium text-gray-600">Aucune classe trouvée</p>
                     <button 
-                      @click="resetCompetenceFilters" 
+                      @click="resetClassFilters" 
                       class="mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium"
                     >
                       Réinitialiser les filtres
@@ -131,16 +151,16 @@
       </div>
     </div>
     
-    <!-- Compétence Modal -->
-    <div v-if="showCompetenceModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <!-- Class Modal -->
+    <div v-if="showClassModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" @click.stop>
         <div class="p-6 border-b border-gray-200 bg-blue-50">
           <div class="flex justify-between items-center">
             <h3 class="text-xl font-semibold text-gray-900">
-              {{ editingCompetence ? 'Modifier' : 'Ajouter' }} une compétence
+              {{ editingClass ? 'Modifier' : 'Ajouter' }} une classe
             </h3>
             <button 
-              @click="showCompetenceModal = false" 
+              @click="showClassModal = false" 
               class="text-gray-400 hover:text-gray-500 focus:outline-none"
             >
               <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -152,91 +172,73 @@
         
         <div class="p-6 space-y-6">
           <div>
-            <label for="competence-name" class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+            <label for="class-name" class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
             <input 
               type="text" 
-              id="competence-name" 
-              v-model="competenceForm.name" 
+              id="class-name" 
+              v-model="classForm.name" 
               class="block w-full border border-gray-300 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              placeholder="Nom de la compétence"
+              placeholder="Nom de la classe"
             >
           </div>
           
           <div>
-            <label for="competence-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label for="class-niveau" class="block text-sm font-medium text-gray-700 mb-1">Niveau</label>
+            <select 
+              id="class-niveau" 
+              v-model="classForm.niveau" 
+              class="block w-full border border-gray-300 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            >
+              <option value="Ging1">Ging1</option>
+              <option value="Ging2">Ging2</option>
+              <option value="Ging3">Ging3</option>
+              <option value="GIL1">GIL1</option>
+              <option value="GIL2">GIL2</option>
+              <option value="GIL3">GIL3</option>
+              <option value="GST">GST</option>
+              <option value="Master">Master</option>
+              <option value="Doctorat">Doctorat</option>
+              <option value="AP1">AP1</option>
+              <option value="AP2">AP2</option>
+            </select>
+          </div>
+          
+          <div>
+            <label for="class-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
             <textarea 
-              id="competence-description" 
-              v-model="competenceForm.description" 
+              id="class-description" 
+              v-model="classForm.description" 
               rows="3"
               class="block w-full border border-gray-300 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              placeholder="Description détaillée de la compétence"
+              placeholder="Description détaillée de la classe"
             ></textarea>
           </div>
           
           <div>
-            <div class="flex justify-between items-center mb-3">
-              <label class="block text-sm font-medium text-gray-700">Critères d'évaluation</label>
-              <button 
-                @click="addCritere" 
-                type="button"
-                class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm leading-4 font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-sm transition-colors duration-200"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                </svg>
-                Ajouter un critère
-              </button>
-            </div>
-            
-            <div v-if="competenceForm.criteres.length === 0" class="bg-gray-50 rounded-lg p-6 text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-              <p class="text-sm text-gray-500">Aucun critère défini</p>
-              <p class="text-xs text-gray-400 mt-1">Cliquez sur "Ajouter un critère" pour commencer</p>
-            </div>
-            
-            <div v-else class="space-y-3">
-              <div 
-                v-for="(critere, index) in competenceForm.criteres" 
-                :key="index" 
-                class="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow duration-200"
-              >
-                <div class="flex-grow">
-                  <input 
-                    type="text" 
-                    v-model="critere.titre" 
-                    placeholder="Titre du critère"
-                    class="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  >
-                </div>
-                <button 
-                  @click="removeCritere(index)" 
-                  type="button"
-                  class="inline-flex items-center p-2 border border-transparent rounded-full text-red-600 hover:text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200"
-                  title="Supprimer ce critère"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                  </svg>
-                </button>
-              </div>
-            </div>
+            <label for="class-etudiants" class="block text-sm font-medium text-gray-700 mb-1">Nombre d'étudiants</label>
+            <input 
+              type="number" 
+              id="class-etudiants" 
+              v-model="classForm.etudiants" 
+              min="0"
+              class="block w-full border border-gray-300 rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              placeholder="Nombre d'étudiants"
+            >
           </div>
         </div>
         
         <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
           <button 
-            @click="showCompetenceModal = false" 
+            @click="showClassModal = false" 
             class="bg-white py-2.5 px-5 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
           >
             Annuler
           </button>
           <button 
-            @click="saveCompetence" 
+            @click="saveClass" 
             class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
           >
-            {{ editingCompetence ? 'Mettre à jour' : 'Ajouter' }}
+            {{ editingClass ? 'Mettre à jour' : 'Ajouter' }}
           </button>
         </div>
       </div>
@@ -257,131 +259,182 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue'
-import api from '../services/api.js'
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 
-// États
-const competences = ref([])
-const loading = ref(false)
-const notification = ref({
+// Types
+interface Classe {
+  id: number;
+  name: string;
+  niveau: string;
+  description: string;
+  etudiants: number;
+}
+
+interface ClassFilter {
+  search: string;
+  niveau: string;
+}
+
+interface NotificationType {
+  show: boolean;
+  title: string;
+  message: string;
+}
+
+// Classes
+const classes = ref<Classe[]>([
+  { 
+    id: 1, 
+    name: 'Informatique A', 
+    niveau: 'Ging1', 
+    description: 'Classe d\'informatique pour les étudiants de première année', 
+    etudiants: 32
+  },
+  { 
+    id: 2, 
+    name: 'Réseaux B', 
+    niveau: 'Ging2', 
+    description: 'Classe spécialisée en réseaux informatiques', 
+    etudiants: 28
+  },
+  { 
+    id: 3, 
+    name: 'Développement Web', 
+    niveau: 'GIL2', 
+    description: 'Formation aux technologies du web et au développement d\'applications', 
+    etudiants: 25
+  },
+  { 
+    id: 4, 
+    name: 'Intelligence Artificielle', 
+    niveau: 'Master', 
+    description: 'Cours avancés sur les algorithmes d\'IA et le machine learning', 
+    etudiants: 18
+  },
+  { 
+    id: 5, 
+    name: 'Préparatoire Sciences', 
+    niveau: 'AP1', 
+    description: 'Classe préparatoire scientifique première année', 
+    etudiants: 45
+  }
+])
+
+const classFilter = ref<ClassFilter>({
+  search: '',
+  niveau: ''
+})
+
+const filteredClasses = computed(() => {
+  return classes.value.filter(classe => {
+    const matchesSearch = !classFilter.value.search || 
+      classe.name.toLowerCase().includes(classFilter.value.search.toLowerCase()) || 
+      classe.description.toLowerCase().includes(classFilter.value.search.toLowerCase())
+    
+    const matchesNiveau = !classFilter.value.niveau || classe.niveau === classFilter.value.niveau
+    
+    return matchesSearch && matchesNiveau
+  })
+})
+
+function resetClassFilters() {
+  classFilter.value = {
+    search: '',
+    niveau: ''
+  }
+}
+
+// Notification system
+const notification = ref<NotificationType>({
   show: false,
   title: '',
   message: ''
 })
-const showCompetenceModal = ref(false)
-const editingCompetence = ref(null)
-const competenceFilter = ref({ search: '' })
-const competenceForm = ref({ 
+
+function showNotification(title: string, message: string) {
+  notification.value = {
+    show: true,
+    title,
+    message
+  }
+  
+  setTimeout(() => {
+    notification.value.show = false
+  }, 3000)
+}
+
+// Class Methods
+const showClassModal = ref(false)
+const editingClass = ref<Classe | null>(null)
+const classForm = ref<Classe>({ 
+  id: 0,
   name: '', 
+  niveau: 'Ging1', 
   description: '', 
-  criteres: [] 
+  etudiants: 0
 })
 
-// Computed
-const filteredCompetences = computed(() => {
-  return competences.value.filter(competence => {
-    const searchTerm = competenceFilter.value.search.toLowerCase()
-    return (
-      !competenceFilter.value.search ||
-      competence.nom.toLowerCase().includes(searchTerm) ||
-      (competence.description && 
-       competence.description.toLowerCase().includes(searchTerm))
-    )
-  })
-})
-
-// Méthodes
-function showNotif(title, msg) {
-  notification.value = { show: true, title, message: msg }
-  setTimeout(() => notification.value.show = false, 3000)
-}
-
-function resetFilters() {
-  competenceFilter.value = { search: '' }
-}
-
-async function fetchCompetences() {
-  try {
-    loading.value = true
-    const response = await api.get('/competences/rechercher')
-    competences.value = response.data.map(c => ({
-      ...c,
-      name: c.nom, // Mapping pour votre interface qui utilise 'name'
-      id: c.id_competence // Mapping pour votre interface qui utilise 'id'
-    }))
-  } catch (error) {
-    console.error('Fetch error:', error)
-    showNotif('Erreur', error.response?.data?.error || 'Échec du chargement')
-  } finally {
-    loading.value = false
-  }
-}
-
-function openCompetenceModal(competence = null) {
-  editingCompetence.value = competence
-  competenceForm.value = competence 
-    ? { 
-        name: competence.nom, // Mapping pour le formulaire
-        description: competence.description || '', 
-        criteres: competence.criteres || [] 
-      }
-    : { name: '', description: '', criteres: [] }
-  showCompetenceModal.value = true
-}
-
-async function saveCompetence() {
-  try {
-    if (!competenceForm.value.name) {
-      showNotif('Attention', 'Le nom est obligatoire')
-      return
+function openClassModal(classe: Classe | null) {
+  if (classe) {
+    editingClass.value = classe
+    classForm.value = { ...classe }
+  } else {
+    editingClass.value = null
+    classForm.value = { 
+      id: 0,
+      name: '', 
+      niveau: 'Ging1', 
+      description: '', 
+      etudiants: 0
     }
-
-    const payload = {
-      nom: competenceForm.value.name, // Mapping pour l'API qui attend 'nom'
-      description: competenceForm.value.description
-    }
-
-    if (editingCompetence.value) {
-      await api.put(`/competences/${editingCompetence.value.id_competence}`, payload)
-      showNotif('Succès', 'Compétence mise à jour')
-    } else {
-      await api.post('/competences/ajouter', payload)
-      showNotif('Succès', 'Nouvelle compétence ajoutée')
-    }
-
-    await fetchCompetences()
-    showCompetenceModal.value = false
-  } catch (error) {
-    console.error('Save error:', error)
-    showNotif('Erreur', error.response?.data?.error || 'Échec de la sauvegarde')
   }
+  showClassModal.value = true
 }
 
-async function deleteCompetence(id) {
-  try {
-    await api.delete(`/competences/${id}`)
-    showNotif('Succès', 'Compétence supprimée')
-    await fetchCompetences()
-  } catch (error) {
-    console.error('Delete error:', error)
-    showNotif('Erreur', error.response?.data?.error || 'Échec de la suppression')
+function saveClass() {
+  if (!classForm.value.name) {
+    showNotification('Attention', 'Le nom de la classe est obligatoire')
+    return
   }
+  
+  if (editingClass.value) {
+    const index = classes.value.findIndex(c => c.id === editingClass.value!.id)
+    if (index !== -1) {
+      classes.value[index] = { ...classForm.value }
+      showNotification('Succès', 'La classe a été mise à jour avec succès')
+    }
+  } else {
+    const newId = Math.max(0, ...classes.value.map(c => c.id)) + 1
+    classes.value.push({ ...classForm.value, id: newId })
+    showNotification('Succès', 'La classe a été ajoutée avec succès')
+  }
+  showClassModal.value = false
 }
 
-function addCritere() {
-  competenceForm.value.criteres.push({ 
-    id: Date.now(), 
-    titre: '' 
-  })
+function deleteClass(id: number) {
+  classes.value = classes.value.filter(c => c.id !== id)
+  showNotification('Succès', 'La classe a été supprimée avec succès')
 }
 
-function removeCritere(index) {
-  competenceForm.value.criteres.splice(index, 1)
+// Helper functions
+function getNiveauClass(niveau: string): string {
+  const niveauClasses: Record<string, string> = {
+    'Ging1': 'bg-green-100 text-green-800',
+    'Ging2': 'bg-green-100 text-green-800',
+    'Ging3': 'bg-green-100 text-green-800',
+    'GIL1': 'bg-yellow-100 text-yellow-800',
+    'GIL2': 'bg-yellow-100 text-yellow-800',
+    'GIL3': 'bg-yellow-100 text-yellow-800',
+    'GST': 'bg-orange-100 text-orange-800',
+    'Master': 'bg-blue-100 text-blue-800',
+    'Doctorat': 'bg-red-100 text-red-800',
+    'AP1': 'bg-blue-100 text-blue-800',
+    'AP2': 'bg-blue-100 text-blue-800'
+  }
+  
+  return niveauClasses[niveau] || 'bg-gray-100 text-gray-800'
 }
-
-// Initialisation
-onMounted(fetchCompetences)
 </script>
 
 <style>

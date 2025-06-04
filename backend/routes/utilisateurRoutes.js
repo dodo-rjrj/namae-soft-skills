@@ -6,5 +6,6 @@ router.post('/ajouter', utilisateurController.ajouterUtilisateur);
 router.patch('/modifier/:id', utilisateurController.mettreAJourUtilisateur);
 router.delete('/supprimer/:id', utilisateurController.supprimerUtilisateur);
 router.get('/rechercher', utilisateurController.rechercherUtilisateur);
+router.get('/', utilisateurController.getAllUtilisateurs);
 
 module.exports = router;

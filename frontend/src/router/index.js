@@ -238,6 +238,18 @@ const router = createRouter({
       }
     },
     {
+      path: '/admin-class',
+      name: 'admin-class',
+      component: () => import('../views/admin-class.vue'),
+      meta: { 
+        requiresAuth: true,
+        roles: ['admin'],
+        security: {
+          noCache: true
+        }
+      }
+    },
+    {
       path: '/admin-competence',
       name: 'admin-competence',
       component: () => import('../views/admin-competence.vue'),

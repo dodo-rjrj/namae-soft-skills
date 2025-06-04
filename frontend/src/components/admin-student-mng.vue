@@ -150,17 +150,6 @@
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               >
             </div>
-            <div v-if="!showEditModal">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-              <input 
-                type="password"
-                v-model="form.mot_de_passe" 
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-              >
-            </div>
-          </div>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Date d'inscription</label>
               <input 
@@ -292,34 +281,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import api from '../services/api' // Votre configuration axios existante
 
 // Current date for default value
 const today = new Date().toISOString().split('T')[0]
 
-// Students data
-const students = ref([
-  { 
-    id: 1, 
-    nom: 'Dupont', 
-    prenom: 'Jean', 
-    email: 'jean.dupont@example.com', 
-    date_inscription: '2023-09-01',
-    promotion: '2023',
-    filiere: 'Ging1',
-    mot_de_passe: ''
-  },
-  { 
-    id: 2, 
-    nom: 'Lambert', 
-    prenom: 'Sophie', 
-    email: 'sophie.lambert@example.com', 
-    date_inscription: '2023-09-01',
-    promotion: '2022',
-    filiere: 'GIL2',
-    mot_de_passe: ''
-  }
-])
+// Students data - maintenant chargée depuis l'API
+const students = ref([])
+const loading = ref(false)
 
 // Search query
 const searchQuery = ref('')
@@ -346,8 +316,37 @@ const form = ref({
   mot_de_passe: '',
   date_inscription: today,
   promotion: '',
-  filiere: 'Ging1'
+  filiere: 'Ging1',
+  cycle: 'licence' // Ajouté pour le backend
 })
+
+// Charger les étudiants au démarrage
+onMounted(() => {
+  loadStudents()
+})
+
+// Fonction pour charger tous les étudiants
+const loadStudents = async () => {
+  loading.value = true
+  try {
+    console.log('Test de connexion API...')
+    
+    // Test simple
+    const response = await api.get('/utilisateurs/recherche?nom=')
+    console.log('Réponse API:', response.data)
+    
+    students.value = response.data.utilisateurs || []
+  } catch (error) {
+    console.error('Erreur complète:', error)
+    console.error('Status:', error.response?.status)
+    console.error('Data:', error.response?.data)
+    console.error('URL appelée:', error.config?.url)
+    
+    showNotification('Erreur lors du chargement des étudiants', 'error')
+  } finally {
+    loading.value = false
+  }
+}
 
 // Show notification
 const showNotification = (message, type = 'success') => {
@@ -356,7 +355,7 @@ const showNotification = (message, type = 'success') => {
     message,
     type
   }
-  
+
   // Hide notification after 4 seconds
   setTimeout(() => {
     notification.value.show = false
@@ -367,12 +366,12 @@ const showNotification = (message, type = 'success') => {
 const filteredStudents = computed(() => {
   const query = searchQuery.value.toLowerCase()
   if (!query) return students.value
-  
+
   return students.value.filter(student => 
-    student.nom.toLowerCase().includes(query) || 
-    student.prenom.toLowerCase().includes(query) || 
-    student.email.toLowerCase().includes(query) ||
-    student.filiere.toLowerCase().includes(query)
+    student.nom?.toLowerCase().includes(query) || 
+    student.prenom?.toLowerCase().includes(query) || 
+    student.email?.toLowerCase().includes(query) ||
+    student.filiere?.toLowerCase().includes(query)
   )
 })
 
@@ -389,13 +388,19 @@ const closeModal = () => {
     mot_de_passe: '',
     date_inscription: today,
     promotion: '',
-    filiere: 'Ging1'
+    filiere: 'Ging1',
+    cycle: 'licence'
   }
 }
 
 // Edit student
 const editStudent = (student) => {
-  form.value = { ...student }
+  form.value = { 
+    ...student,
+    date_inscription: student.date_inscription ? 
+      new Date(student.date_inscription).toISOString().split('T')[0] : 
+      today
+  }
   showEditModal.value = true
 }
 
@@ -405,43 +410,72 @@ const confirmDelete = (id) => {
   showConfirmModal.value = true
 }
 
-// Delete student
-const deleteStudent = () => {
-  students.value = students.value.filter(s => s.id !== studentToDelete.value)
-  showConfirmModal.value = false
-  showNotification('Étudiant supprimé avec succès', 'success')
-  studentToDelete.value = null
+// Delete student - maintenant avec API
+const deleteStudent = async () => {
+  loading.value = true
+  try {
+    await api.delete(`/utilisateurs/${studentToDelete.value}`)
+    showNotification('Étudiant supprimé avec succès', 'success')
+    await loadStudents() // Recharger la liste
+  } catch (error) {
+    console.error('Erreur lors de la suppression:', error)
+    const errorMessage = error.response?.data?.error || 'Erreur lors de la suppression'
+    showNotification(errorMessage, 'error')
+  } finally {
+    loading.value = false
+    showConfirmModal.value = false
+    studentToDelete.value = null
+  }
 }
 
-// Save student (add or update)
-const saveStudent = () => {
+// Save student (add or update) - maintenant avec API
+const saveStudent = async () => {
   // Validation
   if (!form.value.nom || !form.value.prenom || !form.value.email) {
     showNotification('Veuillez remplir tous les champs obligatoires', 'error')
     return
   }
-  
-  if (showEditModal.value) {
-    // Update existing student
-    const index = students.value.findIndex(s => s.id === form.value.id)
-    if (index !== -1) {
-      students.value[index] = { ...form.value }
+
+  loading.value = true
+
+  try {
+    if (showEditModal.value) {
+      // Update existing student
+      await api.put(`/utilisateurs/${form.value.id}`, {
+        nom: form.value.nom,
+        prenom: form.value.prenom,
+        email: form.value.email,
+        date_inscription: form.value.date_inscription,
+        promotion: form.value.promotion,
+        filiere: form.value.filiere,
+        cycle: form.value.cycle
+      })
       showNotification('Étudiant mis à jour avec succès', 'success')
+    } else {
+      // Add new student
+      const response = await api.post('/utilisateurs', {
+        nom: form.value.nom,
+        prenom: form.value.prenom,
+        email: form.value.email,
+        role: 'etudiant',
+        date_inscription: form.value.date_inscription,
+        promotion: form.value.promotion,
+        filiere: form.value.filiere,
+        cycle: form.value.cycle
+      })
+      showNotification(`Étudiant ajouté avec succès. Mot de passe: ${response.data.motDePasseGenere}`, 'success')
     }
-  } else {
-    // Add new student
-    const maxId = students.value.length > 0 
-      ? Math.max(...students.value.map(s => s.id)) 
-      : 0
-      
-    students.value.push({
-      ...form.value,
-      id: maxId + 1
-    })
-    showNotification('Étudiant ajouté avec succès', 'success')
+    
+    await loadStudents() // Recharger la liste
+    closeModal()
+    
+  } catch (error) {
+    console.error('Erreur lors de la sauvegarde:', error)
+    const errorMessage = error.response?.data?.error || 'Erreur lors de la sauvegarde'
+    showNotification(errorMessage, 'error')
+  } finally {
+    loading.value = false
   }
-  
-  closeModal()
 }
 </script>
 

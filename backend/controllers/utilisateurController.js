@@ -171,3 +171,12 @@ exports.rechercherUtilisateur = async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur.' });
   }
 };
+exports.getAllUtilisateurs = async (req, res) => {
+  try {
+    const utilisateurs = await Utilisateur.findAll();
+    res.status(200).json(utilisateurs);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des utilisateurs :', error);
+    res.status(500).json({ error: 'Erreur serveur.' });
+  }
+};

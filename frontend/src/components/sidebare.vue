@@ -200,6 +200,16 @@
         </svg>
         Gestion des admins
       </router-link>
+       <router-link 
+        to="admin-class" 
+        class="submenu-item flex items-center px-3 py-2 text-gray-600 text-sm hover:bg-gray-100 transition rounded-md"
+        @click="showUserMenu = false"
+      >
+        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path d="..." />
+        </svg>
+        Gestion des Classes
+      </router-link>
     </div>
   </transition>
 </div>
