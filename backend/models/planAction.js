@@ -7,7 +7,11 @@ const PlanAction = sequelize.define('PlanAction', {
   description: { type: DataTypes.STRING },
   responsable: { type: DataTypes.STRING },
   statut: { type: DataTypes.STRING },
-  date: { type: DataTypes.DATE }
+  date: { type: DataTypes.DATE },
+  id_type: {
+    type: DataTypes.INTEGER,
+    references: { model: 'type_comportement', key: 'id_type' }
+  }
 }, {
   tableName: 'plan_action',
   timestamps: false

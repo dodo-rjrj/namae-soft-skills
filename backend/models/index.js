@@ -16,8 +16,18 @@ const Questionnaire = require('./Questionnaire');
 const Reponse = require('./Reponse');
 const Rapport = require('./Rapport');
 const Attestation = require('./Attestation');
+const TypeComportement = require('./TypeComportement');
+
 
 // Associations
+TypeComportement.hasMany(PlanAction, { foreignKey: 'id_type' });
+PlanAction.belongsTo(TypeComportement, { foreignKey: 'id_type' });
+
+TypeComportement.hasMany(Comportement, { foreignKey: 'id_type' });
+Comportement.belongsTo(TypeComportement, { foreignKey: 'id_type' });
+
+PlanAction.hasMany(Comportement, { foreignKey: 'id_plan' });
+Comportement.belongsTo(PlanAction, { foreignKey: 'id_plan' });
 
 // Utilisateur -> Evaluation (en tant qu'évaluateur)
 Utilisateur.hasMany(Evaluation, { foreignKey: 'id_utilisateur' });
@@ -86,6 +96,7 @@ module.exports = {
   Questionnaire,
   Reponse,
   Rapport,
+  TypeComportement,
   Attestation
 };
 

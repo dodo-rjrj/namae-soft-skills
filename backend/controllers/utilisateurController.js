@@ -1,5 +1,7 @@
 const Utilisateur = require('../models/Utilisateur');
 const { Op } = require('sequelize');
+const bcrypt = require('bcryptjs');
+const envoyerMail = require('../utils/sendMail');
 
 // Fonction pour ajouter un utilisateur
 exports.ajouterUtilisateur = async (req, res) => {
@@ -22,6 +24,10 @@ exports.ajouterUtilisateur = async (req, res) => {
   if (!nom || !prenom || !email || !role) {
     return res.status(400).json({ error: 'Les champs nom, prénom, email et rôle sont obligatoires.' });
   }
+  // Validation simple du format email
+  if (!email.includes('@') || !email.includes('.')) {
+    return res.status(400).json({ error: 'Email invalide.' });
+  }
 
   // Définir la date d'inscription par défaut à la date actuelle si non fournie
   const dateInscription = date_inscription || new Date();
@@ -29,13 +35,14 @@ exports.ajouterUtilisateur = async (req, res) => {
   try {
     // Générer un mot de passe par défaut
     const motDePasse = genererMotDePasse();
+    const motDePasseHash = await bcrypt.hash(motDePasse, 10);
 
     // Préparer les données de l'utilisateur selon le rôle
     const utilisateurData = {
       nom,
       prenom,
       email,
-      mot_de_passe: motDePasse,
+      mot_de_passe: motDePasseHash,
       role,
       date_inscription: dateInscription
     };
@@ -65,6 +72,25 @@ exports.ajouterUtilisateur = async (req, res) => {
     // Créer l'utilisateur dans la base de données
     const nouvelUtilisateur = await Utilisateur.create(utilisateurData);
 
+    const sujet = 'Création de votre compte utilisateur';
+    const contenuHTML = `
+  <p>Bonjour ${prenom},</p>
+  <p>Bienvenue sur <strong>Namaa</strong>, votre plateforme de gestion des soft skills.</p>
+  <p>Vous trouverez ci-dessous vos identifiants de connexion :</p>
+  <ul>
+    <li><strong>Email :</strong> ${email}</li>
+    <li><strong>Mot de passe :</strong> ${motDePasse}</li>
+  </ul>
+  <p>Merci de vous connecter et de changer votre mot de passe dès que possible.</p>
+  <p>Cordialement,<br>L'équipe Namaa</p>
+`;
+
+    try {
+      await envoyerMail(email, sujet, contenuHTML);
+    } catch (err) {
+      console.error('Échec de l’envoi de l’e-mail, mais utilisateur créé.');
+    }
+
     // Répondre avec le succès
     res.status(201).json({
       message: 'Utilisateur ajouté avec succès',
@@ -93,7 +119,7 @@ exports.mettreAJourUtilisateur = async (req, res) => {
   const donnees = req.body;
 
   try {
-    const utilisateur = await Utilisateur.findByPk(id);
+    const utilisateur = await Utilisateur.findOne({ where: { id_utilisateur: id } });
 
     if (!utilisateur) {
       return res.status(404).json({ error: 'Utilisateur non trouvé.' });

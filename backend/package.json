@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "test": "NODE_ENV=test jest --runInBand --verbose"
   },
   "keywords": [],
   "author": "",
@@ -16,7 +16,14 @@
     "express": "^5.1.0",
     "pg": "^8.16.0",
     "pg-hstore": "^2.3.4",
+    "dotenv": "^16.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^7.0.3",
     "sequelize": "^6.37.7",
     "sequelize-cli": "^6.6.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.1.1"
   }
 }

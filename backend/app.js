@@ -1,14 +1,16 @@
 const express = require('express');
 const sequelize = require('./config/database');
-const utilisateurRoutes = require('./routes/utilisateurRoutes'); 
+const utilisateurRoutes = require('./routes/utilisateurRoutes'); // Importer les routes utilisateurs
 const competenceRoutes = require('./routes/competenceRoutes');
 const ponderationRoutes = require('./routes/ponderationRoutes');
 const permissionsRoutes = require('./routes/permissionsRoutes');
 const evaluationRoutes = require('./routes/evaluationRoutes');
+const comportementRoutes = require('./routes/comportementRoutes');
+const authRoutes = require('./routes/authRoutes');
+const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 3009; // Port d'écoute
-const cors = require('cors');
 
 app.use(cors({
   origin: 'http://localhost:3000',
@@ -27,28 +29,20 @@ app.use((req, res, next) => {
   next();
 });
 
+// Utilisation des routes pour l'authentification
+app.use('/api/auth', authRoutes);
+
 // Utilisation des routes pour les utilisateurs
 app.use('/api/utilisateurs', utilisateurRoutes);
 app.use('/api/competences', competenceRoutes);
 app.use('/api/ponderation', ponderationRoutes);
 app.use('/api/permissions', permissionsRoutes);
 app.use('/evaluations', evaluationRoutes);
-
+app.use('/api/comportements', comportementRoutes);
 
 // Une route de test pour vérifier que le serveur fonctionne
 app.get('/', (req, res) => {
   res.send('Hello World! I am here');
 });
 
-// Connexion à la base de données
-sequelize.authenticate()
-  .then(() => {
-    console.log('✅ Connexion à la base de données réussie !');
-    app.listen(port, () => {
-      console.log(`🚀 Backend is listening at http://localhost:${port}`);
-    });
-  })
-  .catch((err) => {
-    console.error('❌ Connexion à la base de données échouée :', err.message);
-    process.exit(1); // Arrêter le serveur si la base de données échoue à se connecter
-  });
+module.exports = app;
