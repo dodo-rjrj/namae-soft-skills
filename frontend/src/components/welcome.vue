@@ -4,7 +4,7 @@
       <div>
         <h1 class="welcome-title">
           Welcome back,
-          <span class="highlight">{{ name }}</span>
+          <span class="highlight">{{ nom }} {{prenom  }}</span>
         </h1>
         <p class="tagline">
           Soft skills don't show up on a resume — they're felt in every word, every gesture, and every silence
@@ -16,9 +16,17 @@
 
 <script setup>
 import { ref } from 'vue'
-const name=ref('MANAR')
+
+// Récupérer le user depuis localStorage
+const user = JSON.parse(localStorage.getItem('user'))
+
+// Initialiser les ref avec les données du user
+const nom = ref(user?.nom || '')
+const prenom = ref(user?.prenom || '')
 
 </script>
+
+
 
 <style scoped>
 .welcome-card {

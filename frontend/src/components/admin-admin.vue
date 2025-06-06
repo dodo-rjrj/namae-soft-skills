@@ -278,7 +278,6 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '../services/api' // Votre configuration axios existante
 
-const router = useRouter()
 
 // Current date for default value
 const today = new Date().toISOString().split('T')[0]

@@ -164,10 +164,6 @@
               </button>
             </div>
           </div>
-
-          <p class="signup-link text-center mt-4 text-sm">
-            Pas encore de compte ? <router-link to="/register" class="text-blue-600">S'inscrire</router-link>
-          </p>
         </div>
       </div>
     </div>

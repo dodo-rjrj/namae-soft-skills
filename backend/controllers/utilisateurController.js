@@ -166,9 +166,15 @@ exports.supprimerUtilisateur = async (req, res) => {
 
 
 exports.rechercherUtilisateur = async (req, res) => {
-  const { nom, email, role } = req.query;
+  const { id_utilisateur, nom, email, role } = req.query; // ajout id_utilisateur
 
   const whereClause = { [Op.and]: [] };
+
+  if (id_utilisateur) {
+    // Ici, on force une recherche exacte (si tu veux LIKE dis-moi 😉)
+    whereClause[Op.and].push({ id_utilisateur: id_utilisateur });
+  }
+
 
   if (nom) {
     whereClause[Op.and].push({ nom: { [Op.iLike]: `%${nom}%` } });

@@ -14,7 +14,7 @@
       </button>  
       <div class="flex-1 overflow-y-auto py-3">
         <!-- Student Menu Items -->
-        <template v-if="role === 'student'">
+        <template v-if="role === 'etudiant'">
           <!-- Dashboard -->
           <router-link
             to="/student-dashboard"
@@ -60,7 +60,7 @@
         </template>
         
         <!-- Professor Menu Items -->
-        <template v-else-if="role === 'professor'">
+        <template v-else-if="role === 'enseignant'">
           <!-- Dashboard -->
           <router-link
             to="/prof-dashboard"
@@ -96,7 +96,7 @@
         </template>
         
         <!-- Admin Menu Items -->
-        <template v-else-if="role === 'admin'">
+        <template v-else-if="role === 'administrateur'">
           <!-- Dashboard -->
           <router-link
             to="/admin-static"
