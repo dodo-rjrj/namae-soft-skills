@@ -1,6 +1,8 @@
 const Utilisateur = require('../models/Utilisateur');
 const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
+const envoyerMail = require('../utils/sendMail');
+
 // Fonction pour ajouter un utilisateur
 exports.ajouterUtilisateur = async (req, res) => {
   const {
@@ -69,6 +71,25 @@ exports.ajouterUtilisateur = async (req, res) => {
 
     // Créer l'utilisateur dans la base de données
     const nouvelUtilisateur = await Utilisateur.create(utilisateurData);
+
+    const sujet = 'Création de votre compte utilisateur';
+    const contenuHTML = `
+  <p>Bonjour ${prenom},</p>
+  <p>Bienvenue sur <strong>Namaa</strong>, votre plateforme de gestion des soft skills.</p>
+  <p>Vous trouverez ci-dessous vos identifiants de connexion :</p>
+  <ul>
+    <li><strong>Email :</strong> ${email}</li>
+    <li><strong>Mot de passe :</strong> ${motDePasse}</li>
+  </ul>
+  <p>Merci de vous connecter et de changer votre mot de passe dès que possible.</p>
+  <p>Cordialement,<br>L'équipe Namaa</p>
+`;
+
+    try {
+      await envoyerMail(email, sujet, contenuHTML);
+    } catch (err) {
+      console.error('Échec de l’envoi de l’e-mail, mais utilisateur créé.');
+    }
 
     // Répondre avec le succès
     res.status(201).json({
