@@ -20,77 +20,85 @@ export const useAuthStore = defineStore("auth", () => {
   const userRole = computed(() => user.value?.role || null);
 
   // Mock implementation for testing - Comment out when backend is ready
-  async function refreshAccessToken() {
-    return token.value;
-  }
+// Dans votre store Remplacez la fonction mock
+async function refreshAccessToken() {
+if (!refreshToken.value) {
+throw new Error('No refresh token available');
+}
+try {
+const response = await post('api/auth/refresh', {
+refreshToken: refreshToken.value
+});
+if (response.token) {
+setTokens (response.token, refreshToken.value);
+return response.token;
+} else {
+throw new Error('Invalid refresh response');
+}
+} catch (error) {
+// Si le refresh échoue, déconnecter
 
+throw error;
+}
+}
   // Mock implementation for testing - Comment out when backend is ready
-  async function login(credentials) {
-    try {
-      // Validate password strength
-      if (!validatePasswordStrength(credentials.password)) {
-        throw new Error('Password does not meet security requirements');
-      }
+async function login(credentials) {
+  try {
+    console.log('Sending login request with:', {
+      email: credentials.email,
+      mot_de_passe: credentials.password
+    });
 
-      // Mock user data for testing - Different roles based on email
-      let mockUser;
-      if (credentials.email.includes('professor')) {
-        mockUser = {
-          id: 2,
-          email: credentials.email,
-          role: 'professor',
-          name: 'Professor Test'
-        };
-      } else if (credentials.email.includes('admin')) {
-        mockUser = {
-          id: 3,
-          email: credentials.email,
-          role: 'admin',
-          name: 'Admin Test'
-        };
-      } else {
-        mockUser = {
-          id: 1,
-          email: credentials.email,
-          role: 'student',
-          name: 'Student Test'
-        };
-      }
-      
-      const mockToken = 'mock-token-' + Date.now();
-      const mockRefreshToken = 'mock-refresh-token-' + Date.now();
-      const mockSessionId = 'mock-session-' + Date.now();
+    const response = await post('api/auth/login', {
+      email: credentials.email,
+      mot_de_passe: credentials.password
+    });
 
-      // Set tokens and user data
-      setTokens(mockToken, mockRefreshToken);
-      sessionId.value = mockSessionId;
-      user.value = mockUser;
+    console.log('Login response received:', response);
+
+    if (response.message === 'Connexion réussie.' && response.token && response.utilisateur) {
+      console.log('Login successful, setting tokens...');
       
-      localStorage.setItem('sessionId', mockSessionId);
-      localStorage.setItem('user', JSON.stringify(mockUser));
+      // Store the token sent by backend
+      setTokens(response.token, '');
+
+      const utilisateur = response.utilisateur;
+      sessionId.value = 'session-' + Date.now();
+      user.value = utilisateur;
+
+      localStorage.setItem('sessionId', sessionId.value);
+      localStorage.setItem('user', JSON.stringify(utilisateur));
       updateLastActivity();
-      
-      // Generate new CSRF token after successful login
+
       csrfToken.value = generateCSRFToken();
-      
-      // Redirect to appropriate dashboard based on role
-      switch (mockUser.role) {
-        case 'student':
+
+      console.log('User stored:', utilisateur);
+      console.log('Token stored:', response.token);
+
+      // Redirect based on role:
+      switch (utilisateur.role) {
+        case 'etudiant':  // ← Check if this matches your database
           router.push('/student-dashboard');
           break;
-        case 'professor':
+        case 'enseignant':  // ← Check if this matches your database
           router.push('/prof-dashboard');
           break;
-        case 'admin':
+        case 'administrateur':  // ← Check if this matches your database
           router.push('/admin-dashboard');
           break;
         default:
+          console.log('Unknown role:', utilisateur.role);
           router.push('/unauthorized');
       }
-    } catch (error) {
-      throw error;
+    } else {
+      console.error('Invalid response structure:', response);
+      throw new Error('Erreur de connexion: réponse invalide');
     }
+  } catch (error) {
+    console.error('Erreur lors de la connexion:', error);
+    throw error;
   }
+}
 
   function validatePasswordStrength(password) {
     const minLength = 8;
@@ -108,27 +116,6 @@ export const useAuthStore = defineStore("auth", () => {
 
   // Backend implementation - Uncomment when backend is ready
   
-  async function refreshAccessToken() {
-    if (isRefreshing.value) return;
-    isRefreshing.value = true;
-
-    try {
-      const response = await post('/auth/refresh', {
-        refreshToken: refreshToken.value
-      });
-      
-      if (response.accessToken) {
-        setTokens(response.accessToken, response.refreshToken);
-        return response.accessToken;
-      }
-      throw new Error('Invalid token response');
-    } catch (error) {
-      logout();
-      throw error;
-    } finally {
-      isRefreshing.value = false;
-    }
-  }
 
   function setTokens(newToken, newRefreshToken) {
     token.value = newToken;

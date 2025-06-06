@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 exports.login = async (req, res) => {
-    const { email, motDePasse } = req.body;
+    const { email, mot_de_passe } = req.body;
     try {
         const utilisateur = await Utilisateur.findOne({ where: { email } });
 
@@ -12,8 +12,8 @@ exports.login = async (req, res) => {
             return res.status(401).json({ error: 'Utilisateur non trouvé.' });
         }
 
-        // Vérification du mot de passe avec bcrypt
-        const motDePasseValide = await bcrypt.compare(motDePasse, utilisateur.mot_de_passe);
+        // TEMPORARY: Direct comparison for plain text passwords
+        const motDePasseValide = mot_de_passe === utilisateur.mot_de_passe;
 
         if (!motDePasseValide) {
             return res.status(401).json({ error: 'Mot de passe incorrect.' });

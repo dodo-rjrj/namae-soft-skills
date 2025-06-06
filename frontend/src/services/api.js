@@ -23,23 +23,24 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor
+// Response interceptor - Version temporaire
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // Handle token refresh
+    // Temporairement désactivé pour debug
     if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      try {
+      console.log('401 error on:', originalRequest.url);
+      
+      // Si c'est NOT une requête de login, déconnecter
+      if (!originalRequest.url.includes('/auth/login')) {
+        console.log('401 on protected route - logging out');
         const authStore = useAuthStore();
-        const newToken = await authStore.refreshAccessToken();
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return api(originalRequest);
-      } catch (refreshError) {
-        return Promise.reject(refreshError);
+        authStore.logout();
       }
+      
+      return Promise.reject(error);
     }
 
     const handledError = handleApiError(error);
@@ -47,7 +48,6 @@ api.interceptors.response.use(
     return Promise.reject(handledError);
   }
 );
-
 export const get = async (url, params = {}) => {
   try {
     const response = await api.get(url, { params });

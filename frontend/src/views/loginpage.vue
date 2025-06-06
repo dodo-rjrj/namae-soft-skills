@@ -40,37 +40,56 @@
             </div>
             <div class="form-group mb-4">
               <label for="password">Mot de passe</label>
-              <input :type="showPassword ? 'text' : 'password'" id="password" v-model="password" required class="w-full border p-2 rounded" />
+              <div class="relative">
+                <input 
+                  :type="showPassword ? 'text' : 'password'" 
+                  id="password" 
+                  v-model="password" 
+                  required 
+                  class="w-full border p-2 rounded pr-10" 
+                />
+                <button 
+                  type="button"
+                  @click="togglePassword"
+                  class="absolute right-2 top-2 text-gray-500 hover:text-gray-700"
+                >
+                  👁️
+                </button>
+              </div>
               <span v-if="errors.password" class="text-red-500 text-sm">{{ errors.password }}</span>
             </div>
 
-          <div class="form-options flex justify-between items-center mb-4">
-  <div class="flex items-center">
-    <input 
-      type="checkbox" 
-      v-model="rememberMe" 
-      class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2" 
-      id="rememberMe"
-    />
-    <label for="rememberMe" class="text-sm text-gray-700 whitespace-nowrap">
-      Se souvenir de moi
-    </label>
-  </div>
+            <div class="form-options flex justify-between items-center mb-4">
+              <div class="flex items-center">
+                <input 
+                  type="checkbox" 
+                  v-model="rememberMe" 
+                  class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2" 
+                  id="rememberMe"
+                />
+                <label for="rememberMe" class="text-sm text-gray-700 whitespace-nowrap">
+                  Se souvenir de moi
+                </label>
+              </div>
 
-  <button 
-    @click.prevent="isTutorMode = !isTutorMode"
-    class="text-sm px-4 py-1 rounded-full font-semibold text-white transition whitespace-nowrap"
-    style="background: linear-gradient(135deg, #00bcd4 0%, #7e57c2 100%);"
-  >
-    {{ isTutorMode ? 'Mode Étudiant' : 'Espace Tuteur' }}
-  </button>
-</div>
+              <button 
+                type="button"
+                @click="isTutorMode = !isTutorMode"
+                class="text-sm px-4 py-1 rounded-full font-semibold text-white transition whitespace-nowrap"
+                style="background: linear-gradient(135deg, #00bcd4 0%, #7e57c2 100%);"
+              >
+                {{ isTutorMode ? 'Mode Étudiant' : 'Espace Tuteur' }}
+              </button>
+            </div>
 
+            <router-link to="/forgot-password" class="text-sm text-blue-600 block text-right mb-4">Mot de passe oublié ?</router-link>
 
-           <router-link to="/forgot-password" class="text-sm text-blue-600 block text-right mb-4">Mot de passe oublié ?</router-link>
-
-            <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white py-2 rounded hover:opacity-90 transition">
-              <span v-if="isLoading" class="loader"></span>
+            <button 
+              type="submit" 
+              :disabled="isLoading"
+              class="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white py-2 rounded hover:opacity-90 transition disabled:opacity-50"
+            >
+              <span v-if="isLoading" class="loader">Connexion...</span>
               <span v-else>Se connecter</span>
             </button>
           </form>
@@ -80,7 +99,8 @@
             <div class="flex justify-between items-center mb-4">
               <h3 class="text-lg font-semibold">Connexion Tuteur</h3>
               <button 
-                @click.prevent="isTutorMode = false"
+                type="button"
+                @click="isTutorMode = false"
                 class="text-sm px-4 py-1 rounded-full font-semibold text-white transition whitespace-nowrap"
                 style="background: linear-gradient(135deg, #00bcd4 0%, #7e57c2 100%);"
               >
@@ -103,7 +123,11 @@
               <label>Code d'accès</label>
               <input type="text" v-model="tutor.code" required class="w-full border p-2 rounded" />
             </div>
-            <button @click="handleTutorLogin" class="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white py-2 rounded hover:opacity-90 transition">
+            <button 
+              type="button"
+              @click="handleTutorLogin" 
+              class="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white py-2 rounded hover:opacity-90 transition"
+            >
               Connexion Tuteur
             </button>
           </div>
@@ -116,19 +140,26 @@
               <div class="flex-grow h-px bg-gray-300"></div>
             </div>
             <div class="social-buttons flex justify-center gap-4">
-            <!-- Instagram -->
-<button class="flex items-center gap-2 text-white px-4 py-2 rounded-full shadow hover:opacity-90 transition"
-        style="background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);">
-  <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24">
-    <path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3h10zM12 7c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 2c1.7 0 3 1.3 3 3s-1.3 3-3 3-3-1.3-3-3 1.3-3 3-3zm4.5-2a1.5 1.5 0 110 3 1.5 1.5 0 010-3z"/>
-  </svg>
-  Instagram
-</button>
-
+              <!-- Instagram -->
+              <button 
+                type="button"
+                class="flex items-center gap-2 text-white px-4 py-2 rounded-full shadow hover:opacity-90 transition"
+                style="background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);"
+              >
+                <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24">
+                  <path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3h10zM12 7c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 2c1.7 0 3 1.3 3 3s-1.3 3-3 3-3-1.3-3-3 1.3-3 3-3zm4.5-2a1.5 1.5 0 110 3 1.5 1.5 0 010-3z"/>
+                </svg>
+                Instagram
+              </button>
 
               <!-- LinkedIn -->
-              <button class="flex items-center gap-2 bg-blue-700 text-white px-4 py-2 rounded-full shadow hover:bg-blue-800 transition">
-                <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24"><path d="M4.98 3.5C3.33 3.5 2 4.82 2 6.48c0 1.65 1.33 2.98 2.98 2.98 1.64 0 2.97-1.33 2.97-2.98C7.95 4.82 6.62 3.5 4.98 3.5zM2.4 20.5h5.18V9.98H2.4V20.5zM9.56 9.98v10.52h5.17v-5.63c0-3.07 3.67-3.32 3.67 0v5.63h5.17v-6.04c0-5.58-6.02-5.37-7.37-2.63V9.98H9.56z"/></svg>
+              <button 
+                type="button"
+                class="flex items-center gap-2 bg-blue-700 text-white px-4 py-2 rounded-full shadow hover:bg-blue-800 transition"
+              >
+                <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24">
+                  <path d="M4.98 3.5C3.33 3.5 2 4.82 2 6.48c0 1.65 1.33 2.98 2.98 2.98 1.64 0 2.97-1.33 2.97-2.98C7.95 4.82 6.62 3.5 4.98 3.5zM2.4 20.5h5.18V9.98H2.4V20.5zM9.56 9.98v10.52h5.17v-5.63c0-3.07 3.67-3.32 3.67 0v5.63h5.17v-6.04c0-5.58-6.02-5.37-7.37-2.63V9.98H9.56z"/>
+                </svg>
                 LinkedIn
               </button>
             </div>
@@ -173,11 +204,76 @@ export default {
       }
     }
   },
+  mounted() {
+    // Vérifier s'il y a un token sauvegardé au chargement de la page
+    this.checkSavedToken()
+  },
   methods: {
+    // Méthode pour vérifier et restaurer un token sauvegardé
+    checkSavedToken() {
+      try {
+        const savedToken = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+        const savedUser = localStorage.getItem('user_data') || sessionStorage.getItem('user_data')
+        
+        if (savedToken && savedUser) {
+          const authStore = useAuthStore()
+          const userData = JSON.parse(savedUser)
+          
+          // Vérifier si le store a les méthodes nécessaires
+          if (typeof authStore.setToken === 'function' && typeof authStore.setUser === 'function') {
+            authStore.setToken(savedToken)
+            authStore.setUser(userData)
+            console.log('Token restauré depuis le stockage local')
+          } else {
+            // Fallback si les méthodes n'existent pas dans le store
+            console.log('Token trouvé mais méthodes du store non disponibles')
+          }
+        }
+      } catch (error) {
+        console.error('Erreur lors de la restauration du token:', error)
+        this.clearSavedAuth()
+      }
+    },
+    
+    // Méthode pour sauvegarder les données d'authentification
+    saveAuthData(token, userData, rememberMe = false) {
+      try {
+        if (rememberMe) {
+          // Sauvegarder de façon persistante avec localStorage
+          localStorage.setItem('auth_token', token)
+          localStorage.setItem('user_data', JSON.stringify(userData))
+          localStorage.setItem('remember_me', 'true')
+          console.log('Données sauvegardées dans localStorage (persistant)')
+        } else {
+          // Sauvegarder seulement pour la session avec sessionStorage
+          sessionStorage.setItem('auth_token', token)
+          sessionStorage.setItem('user_data', JSON.stringify(userData))
+          console.log('Données sauvegardées dans sessionStorage (session)')
+        }
+      } catch (error) {
+        console.error('Erreur lors de la sauvegarde:', error)
+      }
+    },
+    
+    // Méthode pour nettoyer les données sauvegardées
+    clearSavedAuth() {
+      try {
+        localStorage.removeItem('auth_token')
+        localStorage.removeItem('user_data')
+        localStorage.removeItem('remember_me')
+        sessionStorage.removeItem('auth_token')
+        sessionStorage.removeItem('user_data')
+        console.log('Données d\'authentification supprimées')
+      } catch (error) {
+        console.error('Erreur lors du nettoyage:', error)
+      }
+    },
+    
     togglePassword() {
       this.showPassword = !this.showPassword
     },
-    getParticleStyle() {
+    
+    getParticleStyle(n) {
       const size = 2 + Math.random() * 5
       const speed = 15 + Math.random() * 30
       const delay = Math.random() * 5
@@ -194,6 +290,7 @@ export default {
         opacity: opacity
       }
     },
+    
     getCircleStyle(index) {
       const size = 30 + (index * 15)
       const duration = 15 + (index * 5)
@@ -207,10 +304,12 @@ export default {
         opacity: opacity
       }
     },
+    
     validateForm() {
       let isValid = true
       this.errors.email = ''
       this.errors.password = ''
+      
       if (!this.email) {
         this.errors.email = 'L\'email est requis'
         isValid = false
@@ -218,6 +317,7 @@ export default {
         this.errors.email = 'Veuillez entrer un email valide'
         isValid = false
       }
+      
       if (!this.password) {
         this.errors.password = 'Le mot de passe est requis'
         isValid = false
@@ -225,463 +325,210 @@ export default {
         this.errors.password = 'Le mot de passe doit contenir au moins 6 caractères'
         isValid = false
       }
+      
       return isValid
     },
+    
     async handleLogin() {
       if (!this.validateForm()) return
+      
       this.isLoading = true
+      
       try {
         const authStore = useAuthStore()
-        console.log('Login avec:', { 
-          email: this.email, 
-          password: this.password,
+        console.log('Tentative de connexion avec:', {
+          email: this.email,
           rememberMe: this.rememberMe
         })
         
-        await authStore.login({
+        // Appel de la méthode login du store
+        const response = await authStore.login({
           email: this.email,
           password: this.password
         })
         
-        // The router.push is handled in the auth store
+        console.log('Réponse du serveur:', response)
+        
+        // Vérifier si la réponse contient les données nécessaires
+        if (response) {
+          // Différentes structures de réponse possibles
+          const token = response.token || response.access_token || response.accessToken
+          const user = response.user || response.data || response
+          
+          if (token && user) {
+            // Sauvegarder le token et les données utilisateur
+            this.saveAuthData(token, user, this.rememberMe)
+            console.log('Connexion réussie et token sauvegardé')
+            
+            // Redirection selon le rôle
+            this.redirectUser(user)
+          } else {
+            // Si pas de token mais connexion réussie
+            console.log('Connexion réussie sans token explicite')
+            this.redirectUser(response)
+          }
+        }
+        
       } catch (error) {
         console.error('Erreur de connexion:', error)
-        this.errors.password = 'Email ou mot de passe incorrect'
+        
+        // Messages d'erreur plus spécifiques
+        if (error.response) {
+          const status = error.response.status
+          const message = error.response.data?.message || error.response.data?.error
+          
+          if (status === 401) {
+            this.errors.password = 'Email ou mot de passe incorrect'
+          } else if (status === 422) {
+            this.errors.email = message || 'Données invalides'
+          } else {
+            this.errors.password = message || 'Une erreur est survenue'
+          }
+        } else {
+          this.errors.password = 'Erreur de connexion. Vérifiez votre connexion internet.'
+        }
+        
+        // Nettoyer les données en cas d'erreur
+        this.clearSavedAuth()
       } finally {
         this.isLoading = false
       }
     },
+    
+    // Méthode pour gérer la redirection
+    redirectUser(userData) {
+      const role = userData.role || userData.user_type || 'default'
+      
+      switch (role.toLowerCase()) {
+        case 'admin':
+        case 'administrateur':
+          this.$router.push('/admin/dashboard')
+          break
+        case 'etudiant':
+        case 'student':
+          this.$router.push('/etudiant/dashboard')
+          break
+        case 'tuteur':
+        case 'tutor':
+          this.$router.push('/tuteur/dashboard')
+          break
+        default:
+          this.$router.push('/dashboard')
+      }
+    },
+    
+    // Méthode de déconnexion
+    logout() {
+      try {
+        const authStore = useAuthStore()
+        if (typeof authStore.logout === 'function') {
+          authStore.logout()
+        }
+        this.clearSavedAuth()
+        this.$router.push('/login')
+        console.log('Déconnexion effectuée')
+      } catch (error) {
+        console.error('Erreur lors de la déconnexion:', error)
+      }
+    },
+    
     handleTutorLogin() {
       if (!this.tutor.nom || !this.tutor.prenom || !this.tutor.entreprise || !this.tutor.code) {
         alert('Veuillez remplir tous les champs tuteur.')
         return
       }
+      
       if (this.tutor.code !== '123456') {
         alert("Code d'accès invalide.")
         return
       }
-      console.log('Connexion tuteur :', this.tutor)
-      alert('Bienvenue, Tuteur ' + this.tutor.nom + ' !')
+      
+      try {
+        // Créer un token fictif pour le tuteur
+        const tutorToken = 'tutor_' + Date.now()
+        const tutorData = {
+          nom: this.tutor.nom,
+          prenom: this.tutor.prenom,
+          entreprise: this.tutor.entreprise,
+          role: 'tuteur',
+          email: `${this.tutor.nom.toLowerCase()}.${this.tutor.prenom.toLowerCase()}@${this.tutor.entreprise.toLowerCase()}.com`
+        }
+        
+        // Sauvegarder les données du tuteur
+        this.saveAuthData(tutorToken, tutorData, true)
+        
+        console.log('Connexion tuteur réussie:', tutorData)
+        alert('Bienvenue, Tuteur ' + this.tutor.nom + ' !')
+        
+        // Redirection vers l'interface tuteur
+        this.$router.push('/tuteur/dashboard')
+      } catch (error) {
+        console.error('Erreur lors de la connexion tuteur:', error)
+        alert('Une erreur est survenue lors de la connexion.')
+      }
     }
   }
 }
 </script>
+
 <style scoped>
-  .login-container {
-    min-height: 90vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
-    position: relative;
-    overflow: hidden;
+.loader {
+  display: inline-block;
+}
+
+.particle {
+  position: absolute;
+  background: rgba(59, 130, 246, 0.5);
+  border-radius: 50%;
+  animation: float linear infinite;
+}
+
+@keyframes float {
+  from {
+    transform: translateY(100vh) scale(0);
   }
-  
-  .login-card {
-    display: flex;
-    background-color: white;
-    border-radius: 16px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 900px;
-    height: auto;
-    overflow: hidden;
-    position: relative;
-    z-index: 1;
+  to {
+    transform: translateY(-100px) scale(1);
   }
-  
-  .skills-illustration {
-    flex: 1;
-    background: linear-gradient(135deg, #00bcd4 0%, #7e57c2 100%);
-    padding: 1.5rem;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+}
+
+.floating-circle {
+  position: absolute;
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  border-radius: 50%;
+  animation: pulse ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(1);
   }
-  
-  .particles {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: 0;
+  to {
+    transform: scale(1.1);
   }
-  
-  .particle {
-    position: absolute;
-    background-color: rgba(255, 255, 255, 0.5);
-    border-radius: 50%;
-    animation: floatParticle linear infinite;
+}
+
+.wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+  border-radius: 50%;
+  animation: wave 6s ease-in-out infinite;
+}
+
+.wave1 { animation-delay: 0s; }
+.wave2 { animation-delay: 2s; }
+.wave3 { animation-delay: 4s; }
+
+@keyframes wave {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0px);
   }
-  
-  @keyframes floatParticle {
-    0% { transform: translateY(0) translateX(0); opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { transform: translateY(-100vh) translateX(20px); opacity: 0; }
+  50% {
+    transform: translateX(-50%) translateY(-20px);
   }
-  
-  .waves-container {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: 0;
-  }
-  
-  .wave {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 200%;
-    height: 100%;
-    background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg"><path d="M0 0v46.29c47.79 22.2 103.59 32.17 158 28 70.36-5.37 136.33-33.31 206.8-37.5 73.84-4.36 147.54 16.88 218.2 35.26 69.27 18.17 138.3 24.88 209.4 13.08 36.15-6 69.85-17.84 104.45-29.34C989.49 25 1113-14.29 1200 52.47V0z" fill="%23ffffff" fill-opacity="0.1"/></svg>') repeat-x;
-    background-size: 1000px 100%;
-    animation: wave linear infinite;
-  }
-  
-  .wave1 { opacity: 0.3; animation-duration: 20s; bottom: -10%; }
-  .wave2 { opacity: 0.2; animation-duration: 15s; bottom: -20%; animation-delay: -5s; }
-  .wave3 { opacity: 0.1; animation-duration: 30s; bottom: -30%; animation-delay: -2s; }
-  
-  @keyframes wave {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
-  
-  .floating-circles {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-  }
-  
-  .floating-circle {
-    position: absolute;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
-    animation: floatCircle ease-in-out infinite;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-  
-  @keyframes floatCircle {
-    0% { transform: translate(calc(-50% + 0px), calc(-50% + 0px)); }
-    25% { transform: translate(calc(-50% + 15px), calc(-50% - 15px)); }
-    50% { transform: translate(calc(-50% - 8px), calc(-50% + 8px)); }
-    75% { transform: translate(calc(-50% - 15px), calc(-50% - 8px)); }
-    100% { transform: translate(calc(-50% + 0px), calc(-50% + 0px)); }
-  }
-  
-  .skills-tagline {
-    margin-top: 1rem;
-    text-align: center;
-    color: white;
-    position: relative;
-    z-index: 2;
-  }
-  
-  .skills-tagline h2 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 0.4rem;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-  
-  .skills-tagline p {
-    font-size: 0.8rem;
-    opacity: 0.9;
-  }
-  
-  .login-form {
-    flex: 1.2;
-    padding: 2rem 1.5rem;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .title {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: #424242;
-    margin-bottom: 0.4rem;
-  }
-  
-  .highlight {
-    background: linear-gradient(135deg, #00bcd4 0%, #7e57c2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  
-  .subtitle {
-    color: #666;
-    margin-bottom: 1.5rem;
-    font-size: 0.85rem;
-  }
-  
-  .form-group {
-    margin-bottom: 1rem;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 0.4rem;
-    font-weight: 500;
-    color: #555;
-    font-size: 0.85rem;
-  }
-  
-  .input-wrapper {
-    position: relative;
-  }
-  
-  input {
-    width: 100%;
-    padding: 0.6rem 0.8rem;
-    padding-right: 2.2rem;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    transition: all 0.2s;
-  }
-  
-  input:focus {
-    outline: none;
-    border-color: #00bcd4;
-    box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.1);
-  }
-  
-  .input-icon {
-    position: absolute;
-    right: 0.8rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #aaa;
-    font-size: 0.9rem;
-  }
-  
-  .form-options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    font-size: 0.8rem;
-  }
-  
-  .checkbox-container {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    user-select: none;
-  }
-  
-  .checkbox-container input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
-  }
-  
-  .checkmark {
-    height: 16px;
-    width: 16px;
-    background-color: #eee;
-    border-radius: 4px;
-    margin-right: 6px;
-    position: relative;
-  }
-  
-  .checkbox-container:hover input ~ .checkmark {
-    background-color: #ccc;
-  }
-  
-  .checkbox-container input:checked ~ .checkmark {
-    background-color: #00bcd4;
-  }
-  
-  .checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
-    left: 5px;
-    top: 2px;
-    width: 4px;
-    height: 8px;
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-  }
-  
-  .checkbox-container input:checked ~ .checkmark:after {
-    display: block;
-  }
-  
-  .forgot-password {
-    color: #7e57c2;
-    text-decoration: none;
-    font-size: 0.8rem;
-  }
-  
-  .forgot-password:hover {
-    text-decoration: underline;
-  }
-  
-  .login-button {
-    width: 100%;
-    padding: 0.65rem;
-    background: linear-gradient(135deg, #00bcd4 0%, #7e57c2 100%);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .login-button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(0, 188, 212, 0.3);
-  }
-  
-  .loader {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    border-top-color: white;
-    animation: spin 1s ease-in-out infinite;
-  }
-  
-  .social-login {
-    margin-top: 1.5rem;
-  }
-  
-  .divider {
-    text-align: center;
-    position: relative;
-    margin: 1rem 0;
-    color: #999;
-    font-size: 0.8rem;
-  }
-  
-  .divider::before,
-  .divider::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    width: calc(50% - 50px);
-    height: 1px;
-    background-color: #ddd;
-  }
-  
-  .divider::before { left: 0; }
-  .divider::after { right: 0; }
-  
-  .social-buttons {
-    display: flex;
-    gap: 0.8rem;
-  }
-  
-  .social-button {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    padding: 0.6rem;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background-color: white;
-    font-size: 0.8rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .social-button:hover {
-    background-color: #f9f9f9;
-    transform: translateY(-1px);
-  }
-  
-  .signup-link {
-    text-align: center;
-    margin-top: 1.5rem;
-    font-size: 0.8rem;
-    color: #666;
-  }
-  
-  .signup-link a {
-    color: #ffab00;
-    font-weight: 600;
-    text-decoration: none;
-  }
-  
-  .error-message {
-    color: #e53e3e;
-    font-size: 0.75rem;
-    margin-top: 0.2rem;
-  }
-  
-  .input-error {
-    border-color: #e53e3e;
-  }
-  
-  .tutor-toggle-button {
-    background-color: #e0f0ff;
-    border: 2px solid #007bff;
-    color: #007bff;
-    padding: 8px 16px;
-    font-weight: 600;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    transition: background-color 0.2s;
-  }
-  
-  .tutor-toggle-button:hover {
-    background-color: #cce4ff;
-  }
-  
-  .tutor-title {
-    font-size: 1.2rem;
-    margin-bottom: 0.8rem;
-  }
-  
-  @media (max-width: 768px) {
-    .login-card {
-      flex-direction: column;
-      max-height: none;
-    }
-    
-    .skills-illustration {
-      padding: 1.5rem 1rem;
-    }
-    
-    .login-form {
-      padding: 1.5rem;
-    }
-    
-    .skills-tagline h2 {
-      font-size: 1.1rem;
-    }
-    
-    .skills-tagline p {
-      font-size: 0.75rem;
-    }
-  }
-  
+}
 </style>
