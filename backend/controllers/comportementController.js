@@ -1,5 +1,5 @@
-const Comportement = require('../models/Comportement');
-const PlanAction = require('../models/PlanAction');
+const Comportement = require('../models/comportement');
+const PlanAction = require('../models/planAction');
 const TypeComportement = require('../models/TypeComportement');
 
 // ➕ Ajouter un comportement

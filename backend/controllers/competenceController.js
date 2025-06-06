@@ -1,4 +1,4 @@
-const Competence = require('../models/Competence');
+const Competence = require('../models/competence');
 const { Op } = require('sequelize');
 
 // Fonction pour ajouter une compétence
