@@ -68,7 +68,7 @@ const router = createRouter({
       component: () => import('../views/DashboardStudent.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['student'],
+        roles: ['etudiant'],
         security: {
           cacheControl: 'private, max-age=0, must-revalidate'
         }
@@ -80,7 +80,7 @@ const router = createRouter({
       component: () => import('../views/auto-evaluate.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['student'],
+        roles: ['etudiant'],
         security: {
           noCache: true
         }
@@ -92,7 +92,7 @@ const router = createRouter({
       component: () => import('../views/History.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['student'],
+        roles: ['etudiant'],
         security: {
           noCache: true
         }
@@ -104,7 +104,7 @@ const router = createRouter({
       component: () => import('../views/analyse.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['student'],
+        roles: ['etudiant'],
         security: {
           noCache: true
         }
@@ -118,7 +118,7 @@ const router = createRouter({
       component: () => import('../views/prof-dashboard.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['professor'],
+        roles: ['enseignant'],
         security: {
           noCache: true
         }
@@ -130,7 +130,7 @@ const router = createRouter({
       component: () => import('../views/prof-analyse.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['professor'],
+        roles: ['enseignant'],
         security: {
           noCache: true
         }
@@ -142,7 +142,7 @@ const router = createRouter({
       component: () => import('../views/prof-evaluation.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['professor'],
+        roles: ['enseignant'],
         security: {
           noCache: true
         }
@@ -154,7 +154,7 @@ const router = createRouter({
       component: () => import('../views/prof-gestion.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['professor'],
+        roles: ['enseignant'],
         security: {
           noCache: true
         }
@@ -166,7 +166,7 @@ const router = createRouter({
       component: () => import('../views/prof-student-dossier.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['professor'],
+        roles: ['enseignant'],
         security: {
           noCache: true
         }
@@ -180,7 +180,7 @@ const router = createRouter({
       component: () => import('../views/admin-gestionsignal.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['admin'],
+        roles: ['administrateur'],
         security: {
           noCache: true
         }
@@ -192,7 +192,7 @@ const router = createRouter({
       component: () => import('../views/admin-parametre.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['admin'],
+        roles: ['administrateur'],
         security: {
           noCache: true
         }
@@ -204,7 +204,7 @@ const router = createRouter({
       component: () => import('../views/admin-student-managent.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['admin'],
+        roles: ['administrateur'],
         security: {
           noCache: true
         }
@@ -219,7 +219,7 @@ const router = createRouter({
       component: () => import('../views/admin-prof-management.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['admin'],
+        roles: ['administrateur'],
         security: {
           noCache: true
         }
@@ -231,7 +231,7 @@ const router = createRouter({
       component: () => import('../views/admin-admin-management.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['admin'],
+        roles: ['administrateur'],
         security: {
           noCache: true
         }
@@ -243,7 +243,7 @@ const router = createRouter({
       component: () => import('../views/admin-class.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['admin'],
+        roles: ['administrateur'],
         security: {
           noCache: true
         }
@@ -255,7 +255,7 @@ const router = createRouter({
       component: () => import('../views/admin-competence.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['admin'],
+        roles: ['administrateur'],
         security: {
           noCache: true
         }
@@ -267,7 +267,7 @@ const router = createRouter({
       component: () => import('../views/admin-static.vue'),
       meta: { 
         requiresAuth: true,
-        roles: ['admin'],
+        roles: ['administrateur'],
         security: {
           noCache: true
         }
@@ -326,11 +326,11 @@ router.beforeEach(async (to, from, next) => {
           // If user is authenticated and tries to access login/register, redirect to dashboard
           if (authStore.isAuthenticated && (to.name === 'login' || to.name === 'register' || to.name === 'home')) {
             // Redirect to appropriate dashboard based on role
-            if (authStore.userRole === 'student') {
+            if (authStore.userRole === 'etudiant') {
               return next({ name: 'student-dashboard' })
-            } else if (authStore.userRole === 'professor') {
+            } else if (authStore.userRole === 'enseignant') {
               return next({ name: 'prof-dashboard' })
-            } else if (authStore.userRole === 'admin') {
+            } else if (authStore.userRole === 'administrateur') {
               return next({ name: 'admin-static' })
             }
           }
