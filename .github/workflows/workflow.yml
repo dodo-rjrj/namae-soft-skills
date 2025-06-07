@@ -2,9 +2,9 @@ name: Fichier workflow
 
 on:
   push:
-    branches: [ nyhasina ]
+    branches: [ final ]
   pull_request:
-    branches: [ nyhasina ]
+    branches: [ final ]
 
 jobs:
   setup-database:
@@ -13,9 +13,9 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: softskillsdb
+          POSTGRES_USER: postgre
+          POSTGRES_PASSWORD: anass2012
+          POSTGRES_DB: softskills_db
         ports:
           - 5432:5432
         options: >-
@@ -63,12 +63,16 @@ jobs:
         working-directory: ./backend
         run: npm install
 
-      - name: Run backend tests  
+       - name: Run backend tests
         working-directory: ./backend
-        run: npm test  
         env:
-          DATABASE_URL: postgres://user:password@localhost:5432/softskillsdb
-          NODE_ENV: test
+          DATABASE_URL: postgres://postgres:anass2012@postgres:5432/softskills_db
+          DB_HOST: postgres  # Alternative plus claire
+          DB_PORT: 5432
+          DB_USER: postgres
+          DB_PASSWORD: anass2012
+          DB_NAME: softskills_db
+        run: npm test
 
 
   security-checks:
