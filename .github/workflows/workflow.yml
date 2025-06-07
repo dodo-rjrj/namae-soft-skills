@@ -52,7 +52,7 @@ jobs:
   backend-setup:
     needs: setup-database
     runs-on: ubuntu-latest
-    steps:  
+    steps:  #line_55
       - name: Checkout repo
         uses: actions/checkout@v3
       
@@ -65,7 +65,7 @@ jobs:
         working-directory: ./backend
         run: npm install
 
-       - name: Run backend tests
+      - name: Run backend tests
         working-directory: ./backend
         env:
           DATABASE_URL: postgres://postgres:anass2012@postgres:5432/softskills_db
