@@ -59,7 +59,7 @@ jobs:
   backend-setup:
     needs: setup-database
     runs-on: ubuntu-latest
-    steps:  #line_55
+    steps:  
       - name: Checkout repo
         uses: actions/checkout@v3
       
@@ -71,8 +71,21 @@ jobs:
       - name: Install backend dependencies
         working-directory: ./backend
         run: npm install
+      
+      - name: Préparer l'environnement de test
+        working-directory: ./backend
+        run: | 
+          
+          [ -f models/competence.js ] && [ ! -f models/Competence.js ] && ln -s competence.js models/Competence.js
+    
+          
+          timeout 15 bash -c 'until pg_isready -h postgres -p 5432 -U postgres; do sleep 1; done'
+    
+         
+          npx sequelize-cli db:migrate --env test
 
-      - name: Run backend tests
+
+      - name: Lancer les tests
         working-directory: ./backend
         env:
           DATABASE_URL: postgres://postgres:anass2012@postgres:5432/softskills_db
