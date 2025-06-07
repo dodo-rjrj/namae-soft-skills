@@ -77,6 +77,11 @@ jobs:
           echo "❌ PostgreSQL connection failed"
           exit 1
 
+      - name: Verify DB connection
+        run: |
+          psql -h localhost -U postgres -c "CREATE DATABASE softskills_test;"
+          psql -h localhost -U postgres -c "CREATE DATABASE softskills_db;"
+
       - name: Run migrations and tests
         working-directory: ./backend
         env:
@@ -85,11 +90,12 @@ jobs:
           DB_USER: postgres
           DB_PASSWORD: anass2012
           DB_NAME: softskills_db
+          TEST_DB_NAME: softskills_test
           NODE_ENV: test
           DATABASE_URL: postgres://postgres:anass2012@localhost:5432/softskills_db
         run: |
-          npx sequelize-cli db:migrate
-          npm test
+          npx sequelize-cli db:migrate --env test
+          NODE_ENV=test DB_NAME=$TEST_DB_NAME npm test
 
   frontend-build:
     runs-on: ubuntu-latest
