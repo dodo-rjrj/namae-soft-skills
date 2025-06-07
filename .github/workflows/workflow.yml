@@ -97,17 +97,16 @@ jobs:
         DB_NAME: softskills_db
       run: npx sequelize-cli db:migrate
 
-
-      - name: Lancer les tests
-        working-directory: ./backend
-        env:
-          DATABASE_URL: postgres://postgres:anass2012@postgres:5432/softskills_db
-          DB_HOST: postgres  # Alternative plus claire
-          DB_PORT: 5432
-          DB_USER: postgres
-          DB_PASSWORD: anass2012
-          DB_NAME: softskills_db
-        run: npm test
+    - name: Lancer les tests
+      working-directory: ./backend
+      env:
+        DATABASE_URL: postgres://postgres:anass2012@postgres:5432/softskills_db
+        DB_HOST: postgres  # Alternative plus claire
+        DB_PORT: 5432
+        DB_USER: postgres
+        DB_PASSWORD: anass2012  
+        DB_NAME: softskills_db
+      run: npm test
 
 
   security-checks:
