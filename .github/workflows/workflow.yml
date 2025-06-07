@@ -77,10 +77,13 @@ jobs:
           echo "❌ PostgreSQL connection failed"
           exit 1
 
-      - name: Verify DB connection
+      - name: Create additional databases
+        env:
+          PGPASSWORD: anass2012
         run: |
-          psql -h localhost -U postgres -c "CREATE DATABASE softskills_test;"
-          psql -h localhost -U postgres -c "CREATE DATABASE softskills_db;"
+          # Crée softskills_db si nécessaire
+          psql "postgresql://postgres:anass2012@localhost:5432" -c "CREATE DATABASE softskills_db;"
+          psql "postgresql://postgres:anass2012@localhost:5432" -c "GRANT ALL PRIVILEGES ON DATABASE softskills_db TO postgres;"
 
       - name: Run migrations and tests
         working-directory: ./backend
