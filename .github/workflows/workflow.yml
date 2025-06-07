@@ -1,4 +1,4 @@
-name: Fichier workflow
+name: CI/CD Pipeline
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [final]
 
 jobs:
-  setup-database:
+  database-service:
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -19,41 +19,57 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
+          --health-cmd pg_isready -U postgres -d softskills_db
+          --health-interval 2s
           --health-timeout 2s
-          --health-retries 10
+          --health-retries 30
     steps:
-      - name: Verify PostgreSQL connection
+      - name: Verify PostgreSQL
         run: |
-          echo "Waiting for PostgreSQL to be ready..."
-          docker run --network host postgres:15 pg_isready -h localhost -p 5432 -U postgres -d softskills_db -t 30
-          echo "PostgreSQL is ready!"
+          echo "PostgreSQL service should be ready via healthcheck"
 
-  backend-setup:
-    needs: setup-database
+  backend:
+    needs: database-service
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v3
-      
-      - name: Wait for PostgreSQL
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm install
+
+      - name: Wait for PostgreSQL (robust method)
+        timeout-minutes: 2
         run: |
-          echo "Verifying PostgreSQL connection from backend job..."
-          docker run --network host postgres:15 pg_isready -h localhost -p 5432 -U postgres -d softskills_db -t 30
-          echo "Connection verified!"
+          echo "Waiting for PostgreSQL to be ready..."
+          for i in {1..30}; do
+            if docker run --rm --network host postgres:15 pg_isready -h localhost -p 5432 -U postgres -d softskills_db -t 1; then
+              echo "PostgreSQL is ready!"
+              exit 0
+            fi
+            echo "Attempt $i/30 - PostgreSQL not ready yet..."
+            sleep 2
+          done
+          echo "PostgreSQL connection failed after 30 attempts"
+          exit 1
 
       - name: Run migrations and tests
         working-directory: ./backend
         env:
-          DB_HOST: localhost  # Changé de 'postgres' à 'localhost'
+          DB_HOST: localhost
           DB_PORT: 5432
           DB_USER: postgres
           DB_PASSWORD: anass2012
           DB_NAME: softskills_db
           NODE_ENV: test
         run: |
-          npx sequelize-cli db:migrate --env test
+          npx sequelize-cli db:migrate
           npm test
 
   frontend-build:
