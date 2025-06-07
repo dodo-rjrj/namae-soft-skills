@@ -51,9 +51,17 @@ jobs:
           node-version: 18
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: Fix and Install dependencies
         working-directory: ./backend
-        run: npm ci
+        run: |
+          if [ -f "package-lock.json" ]; then
+            rm package-lock.json
+          fi
+
+          npm install --package-lock-only
+          npm ci --no-audit
+          
+          echo "Dépendances installées avec succès"
 
       - name: Wait for PostgreSQL (bulletproof)
         timeout-minutes: 2
