@@ -77,13 +77,18 @@ jobs:
           echo "❌ PostgreSQL connection failed"
           exit 1
 
-      - name: Create additional databases
+      - name: Setup databases
         env:
           PGPASSWORD: anass2012
         run: |
-          # Crée softskills_db si nécessaire
-          psql "postgresql://postgres:anass2012@localhost:5432" -c "CREATE DATABASE softskills_db;"
-          psql "postgresql://postgres:anass2012@localhost:5432" -c "GRANT ALL PRIVILEGES ON DATABASE softskills_db TO postgres;"
+          # Crée softskills_db sans erreur si elle existe déjà
+          psql "postgresql://postgres:anass2012@localhost:5432/postgres" -c \
+            "CREATE DATABASE softskills_db WITH OWNER postgres;" || \
+            echo "Database softskills_db already exists"
+          
+          # Grant permissions (idempotent)
+          psql "postgresql://postgres:anass2012@localhost:5432/softskills_db" -c \
+            "GRANT ALL PRIVILEGES ON DATABASE softskills_db TO postgres;"
 
       - name: Run migrations and tests
         working-directory: ./backend
@@ -97,8 +102,13 @@ jobs:
           NODE_ENV: test
           DATABASE_URL: postgres://postgres:anass2012@localhost:5432/softskills_db
         run: |
-          npx sequelize-cli db:migrate --env test
-          NODE_ENV=test DB_NAME=$TEST_DB_NAME npm test
+          # Migrations sur softskills_db
+          npx sequelize-cli db:migrate --env test || \
+            { echo "Migration failed"; exit 1; }
+          
+          # Tests sur softskills_test
+          NODE_ENV=test DB_NAME=$TEST_DB_NAME npm test || \
+            { echo "Tests failed"; exit 1; }
 
   frontend-build:
     runs-on: ubuntu-latest
