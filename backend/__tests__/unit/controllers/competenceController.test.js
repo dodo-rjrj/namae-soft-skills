@@ -1,7 +1,7 @@
-const Competence = require('../../../models/Competence');
+const Competence = require('../../../models/competence');
 const competenceController = require('../../../controllers/competenceController');
 
-jest.mock('../../../models/Competence');
+jest.mock('../../../models/competence');
 
 describe('competenceController', () => {
   beforeEach(() => {

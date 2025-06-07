@@ -57,32 +57,45 @@ jobs:
       #   run: npm run test
 
   backend-setup:
-    needs: setup-database
-    runs-on: ubuntu-latest
-    steps:  
-      - name: Checkout repo
-        uses: actions/checkout@v3
-      
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      
-      - name: Install backend dependencies
-        working-directory: ./backend
-        run: npm install
-      
-      - name: Préparer l'environnement de test
-        working-directory: ./backend
-        run: | 
-          
-          [ -f models/competence.js ] && [ ! -f models/Competence.js ] && ln -s competence.js models/Competence.js
+   needs: setup-database
+   runs-on: ubuntu-latest
+   services:
+    postgres:
+      image: postgres:15
+      env:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: anass2012
+        POSTGRES_DB: softskills_db
+      ports:
+        - 5432:5432
+      options: >-
+        --health-cmd pg_isready
+        --health-interval 10s
+        --health-timeout 5s
+        --health-retries 5
+
+  steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
     
-          
-          timeout 15 bash -c 'until pg_isready -h postgres -p 5432 -U postgres; do sleep 1; done'
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
     
-         
-          npx sequelize-cli db:migrate --env test
+    - name: Install backend dependencies
+      working-directory: ./backend
+      run: npm install
+
+    - name: Run database migrations
+      working-directory: ./backend
+      env:
+        DB_HOST: postgres
+        DB_PORT: 5432
+        DB_USER: postgres
+        DB_PASSWORD: anass2012
+        DB_NAME: softskills_db
+      run: npx sequelize-cli db:migrate
 
 
       - name: Lancer les tests
