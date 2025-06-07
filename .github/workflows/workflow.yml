@@ -31,9 +31,9 @@ jobs:
         echo "PostgreSQL is ready!"
 
   backend-setup:
-  needs: setup-database
-  runs-on: ubuntu-latest
-  steps:
+   needs: setup-database
+   runs-on: ubuntu-latest
+   steps:
     - name: Checkout repo
       uses: actions/checkout@v3
     
