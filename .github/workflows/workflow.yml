@@ -8,53 +8,53 @@ on:
 
 jobs:
   setup-database:
-  runs-on: ubuntu-latest
-  services:
-    postgres:
-      image: postgres:15
-      env:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: anass2012
-        POSTGRES_DB: softskills_db
-      ports:
-        - 5432:5432
-      options: >-
-        --health-cmd pg_isready
-        --health-interval 5s
-        --health-timeout 2s
-        --health-retries 10
-  steps:
-    - name: Verify PostgreSQL connection
-      run: |
-        echo "Waiting for PostgreSQL to be ready..."
-        docker run --network host postgres:15 pg_isready -h localhost -p 5432 -U postgres -d softskills_db -t 30
-        echo "PostgreSQL is ready!"
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: anass2012
+          POSTGRES_DB: softskills_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 2s
+          --health-retries 10
+    steps:
+      - name: Verify PostgreSQL connection
+        run: |
+          echo "Waiting for PostgreSQL to be ready..."
+          docker run --network host postgres:15 pg_isready -h localhost -p 5432 -U postgres -d softskills_db -t 30
+          echo "PostgreSQL is ready!"
 
   backend-setup:
-   needs: setup-database
-   runs-on: ubuntu-latest
-   steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
-    
-    - name: Wait for PostgreSQL
-      run: |
-        echo "Verifying PostgreSQL connection from backend job..."
-        docker run --network host postgres:15 pg_isready -h localhost -p 5432 -U postgres -d softskills_db -t 30
-        echo "Connection verified!"
+    needs: setup-database
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      
+      - name: Wait for PostgreSQL
+        run: |
+          echo "Verifying PostgreSQL connection from backend job..."
+          docker run --network host postgres:15 pg_isready -h localhost -p 5432 -U postgres -d softskills_db -t 30
+          echo "Connection verified!"
 
-    - name: Run migrations and tests
-      working-directory: ./backend
-      env:
-        DB_HOST: localhost  # Changé de 'postgres' à 'localhost'
-        DB_PORT: 5432
-        DB_USER: postgres
-        DB_PASSWORD: anass2012
-        DB_NAME: softskills_db
-        NODE_ENV: test
-      run: |
-        npx sequelize-cli db:migrate --env test
-        npm test
+      - name: Run migrations and tests
+        working-directory: ./backend
+        env:
+          DB_HOST: localhost  # Changé de 'postgres' à 'localhost'
+          DB_PORT: 5432
+          DB_USER: postgres
+          DB_PASSWORD: anass2012
+          DB_NAME: softskills_db
+          NODE_ENV: test
+        run: |
+          npx sequelize-cli db:migrate --env test
+          npm test
 
   frontend-build:
     runs-on: ubuntu-latest
