@@ -2,9 +2,9 @@ name: Fichier workflow
 
 on:
   push:
-    branches: [ final ]
+    branches: [final]
   pull_request:
-    branches: [ final ]
+    branches: [final]
 
 jobs:
   setup-database:
@@ -13,7 +13,7 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: postgres  
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: anass2012
           POSTGRES_DB: softskills_db
         ports:
@@ -23,10 +23,22 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+    steps:
+      - name: Verify database service
+        run: echo "PostgreSQL service is running"
 
   backend-setup:
     needs: setup-database
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: anass2012
+          POSTGRES_DB: softskills_db
+        ports:
+          - 5432:5432
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -57,31 +69,27 @@ jobs:
           npm test
 
   frontend-build:
-   runs-on: ubuntu-latest
-   steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
       
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-    - name: Install frontend dependencies
-      working-directory: ./frontend
-      run: npm install
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm install
 
-    - name: Build frontend (skip missing assets)
-      working-directory: ./frontend
-      run: |
-        mkdir -p src/assets || true
-        touch src/assets/img1.jpg || true
-        npm run build || echo "⚠️ Build failed but continuing workflow"
-      continue-on-error: true  # Key line - prevents workflow failure
-
-      # - name: Run frontend tests
-      #   working-directory: ./frontend
-      #   run: npm run test
+      - name: Build frontend (skip missing assets)
+        working-directory: ./frontend
+        run: |
+          mkdir -p src/assets || true
+          touch src/assets/img1.jpg || true
+          npm run build || echo "⚠️ Build failed but continuing workflow"
+        continue-on-error: true
 
   security-checks:
     needs: [frontend-build, backend-setup]
