@@ -74,7 +74,7 @@ jobs:
         --health-timeout 5s
         --health-retries 5
 
-   steps:
+  steps:
     - name: Checkout repo
       uses: actions/checkout@v3
     
@@ -95,7 +95,12 @@ jobs:
         DB_USER: postgres
         DB_PASSWORD: anass2012
         DB_NAME: softskills_db
-      run: npx sequelize-cli db:migrate
+        NODE_ENV: test
+      run: |
+        timeout 30 bash -c 'until pg_isready -h postgres -p 5432 -U postgres; do sleep 1; done'
+    
+      # Lancer les migrations avec le bon environnement
+        npx sequelize-cli db:migrate --env test
 
     - name: Lancer les tests
       working-directory: ./backend
