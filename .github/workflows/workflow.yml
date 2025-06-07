@@ -50,8 +50,8 @@ jobs:
       #   run: npm run test
 
   backend-setup:
-    runs-on: ubuntu-latest
     needs: setup-database
+    runs-on: ubuntu-latest
     steps:  
       - name: Checkout repo
         uses: actions/checkout@v3
