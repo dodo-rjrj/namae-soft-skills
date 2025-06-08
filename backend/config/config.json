@@ -3,7 +3,7 @@
     "username": "postgres",
     "password": "anass2012",
     "database": "softskills_db",
-    "host": "localhost",
+    "host": "postgres",
     "dialect": "postgres"
   },
   "test": {
