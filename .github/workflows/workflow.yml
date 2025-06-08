@@ -102,6 +102,7 @@ jobs:
           TEST_DB_NAME: softskills_test
           NODE_ENV: test
           DATABASE_URL: postgres://postgres:anass2012@localhost:5432/softskills_db
+          JEST_OPTS: "--detectOpenHandles --forceExit"  
         run: |
           # 1. Vérification des bases
           psql "postgresql://postgres:anass2012@localhost:5432/softskills_db" -c "SELECT 1" || exit 1
