@@ -77,18 +77,19 @@ jobs:
           echo "❌ PostgreSQL connection failed"
           exit 1
 
-      - name: Setup databases
+      - name: Ensure databases exist
         env:
           PGPASSWORD: anass2012
         run: |
-          # Crée softskills_db sans erreur si elle existe déjà
-          psql "postgresql://postgres:anass2012@localhost:5432/postgres" -c \
-            "CREATE DATABASE softskills_db WITH OWNER postgres;" || \
-            echo "Database softskills_db already exists"
-          
-          # Grant permissions (idempotent)
-          psql "postgresql://postgres:anass2012@localhost:5432/softskills_db" -c \
-            "GRANT ALL PRIVILEGES ON DATABASE softskills_db TO postgres;"
+          # Liste des bases nécessaires
+          for db in softskills_test softskills_db; do
+            psql "postgresql://postgres:anass2012@localhost:5432/postgres" -c \
+              "SELECT 1 FROM pg_database WHERE datname = '$db'" | grep -q 1 || \
+              psql "postgresql://postgres:anass2012@localhost:5432/postgres" -c \
+              "CREATE DATABASE $db WITH OWNER postgres;"
+            psql "postgresql://postgres:anass2012@localhost:5432/$db" -c \
+              "GRANT ALL PRIVILEGES ON DATABASE $db TO postgres;"
+          done
 
       - name: Run migrations and tests
         working-directory: ./backend
@@ -102,13 +103,15 @@ jobs:
           NODE_ENV: test
           DATABASE_URL: postgres://postgres:anass2012@localhost:5432/softskills_db
         run: |
-          # Migrations sur softskills_db
-          npx sequelize-cli db:migrate --env test || \
-            { echo "Migration failed"; exit 1; }
+          # 1. Vérification des bases
+          psql "postgresql://postgres:anass2012@localhost:5432/softskills_db" -c "SELECT 1" || exit 1
+          psql "postgresql://postgres:anass2012@localhost:5432/softskills_test" -c "SELECT 1" || exit 1
           
-          # Tests sur softskills_test
-          NODE_ENV=test DB_NAME=$TEST_DB_NAME npm test || \
-            { echo "Tests failed"; exit 1; }
+          # 2. Exécution des migrations
+          npx sequelize-cli db:migrate --env test
+          
+          # 3. Exécution des tests
+          NODE_ENV=test DB_NAME=$TEST_DB_NAME npm test
 
   frontend-build:
     runs-on: ubuntu-latest
