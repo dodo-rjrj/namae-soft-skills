@@ -221,24 +221,24 @@ jobs:
           ignore-unfixed: true
 
   deploy:
-    needs: [trivy-container-scan]  # Ne s'exécute que si tout a réussi avant
-    runs-on: ubuntu-latest
-    steps:
+  needs: [trivy-container-scan]  # Ne s'exécute que si tout a réussi avant
+  runs-on: ubuntu-latest
+  steps:
     # Configuration de la clé SSH
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: unnecessary
-          if_key_exists: replace
+    - name: Install SSH key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        known_hosts: unnecessary
+        if_key_exists: replace
 
     # Ajout de l'hôte aux known_hosts
-      - name: Add host to known_hosts
-        run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+    - name: Add host to known_hosts
+      run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
     # Déploiement via SSH
-      - name: Deploy to EC2
-        run: |
+    - name: Deploy to EC2
+      run: |
         ssh ${{ secrets.SSH_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
         cd ~/app
 
