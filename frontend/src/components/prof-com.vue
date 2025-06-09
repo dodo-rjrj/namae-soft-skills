@@ -7,17 +7,17 @@
         <h1 class="text-3xl font-bold text-blue-800 mb-4 md:mb-0">Dashboard Professeur</h1>
         <div class="flex flex-wrap gap-3">
           <div class="relative">
-            <select v-model="filters.class" class="appearance-none bg-white pl-4 pr-10 py-2.5 rounded-xl border-0 shadow-md text-blue-700 font-medium focus:ring-2 focus:ring-blue-300 focus:outline-none">
+            <select v-model="filters.class" @change="updateCharts" class="appearance-none bg-white pl-4 pr-10 py-2.5 rounded-xl border-0 shadow-md text-blue-700 font-medium focus:ring-2 focus:ring-blue-300 focus:outline-none">
               <option value="">Toutes les classes</option>
-              <option value="terminale">G-INF1</option>
-              <option value="premiere">G-INF2</option>
+              <option value="G-INF1">G-INF1</option>
+              <option value="G-INF2">G-INF2</option>
             </select>
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-blue-500">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
             </div>
           </div>
           <div class="relative">
-            <select v-model="filters.project" class="appearance-none bg-white pl-4 pr-10 py-2.5 rounded-xl border-0 shadow-md text-blue-700 font-medium focus:ring-2 focus:ring-blue-300 focus:outline-none">
+            <select v-model="filters.project" @change="updateCharts" class="appearance-none bg-white pl-4 pr-10 py-2.5 rounded-xl border-0 shadow-md text-blue-700 font-medium focus:ring-2 focus:ring-blue-300 focus:outline-none">
               <option value="">Tous les projets</option>
               <option value="projet1">Projet 1</option>
               <option value="projet2">Projet 2</option>
@@ -27,10 +27,10 @@
             </div>
           </div>
           <div class="relative">
-            <select v-model="filters.period" class="appearance-none bg-white pl-4 pr-10 py-2.5 rounded-xl border-0 shadow-md text-blue-700 font-medium focus:ring-2 focus:ring-blue-300 focus:outline-none">
+            <select v-model="filters.period" @change="updateCharts" class="appearance-none bg-white pl-4 pr-10 py-2.5 rounded-xl border-0 shadow-md text-blue-700 font-medium focus:ring-2 focus:ring-blue-300 focus:outline-none">
               <option value="">Toute l'année</option>
-              <option value="trimestre1">Semestre 1</option>
-              <option value="trimestre2">Semetre 2</option>
+              <option value="S1">Semestre 1</option>
+              <option value="S2">Semestre 2</option>
             </select>
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-blue-500">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -82,75 +82,130 @@
 
         <!-- Charts -->
         <div class="lg:col-span-2 bg-white rounded-2xl shadow-lg p-6">
-          <h2 class="text-xl font-bold text-blue-800 mb-6 flex items-center">
-            <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg>
-            Visualisations
-          </h2>
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-blue-800 flex items-center">
+              <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              Visualisations
+            </h2>
+            <div class="flex space-x-2">
+              <button 
+                v-for="(type, index) in chartTypes" 
+                :key="index"
+                @click="activeChartType = type.id"
+                :class="[
+                  'px-3 py-1 text-sm rounded-md transition-colors',
+                  activeChartType === type.id 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                ]"
+              >
+                {{ type.name }}
+              </button>
+            </div>
+          </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-blue-50 rounded-xl p-5 h-72 flex items-center justify-center">
+            <!-- Radar Chart -->
+            <div 
+              v-show="activeChartType === 'radar' || activeChartType === 'all'"
+              class="bg-blue-50 rounded-xl p-5 h-72 flex items-center justify-center transition-all duration-500"
+              :class="{'opacity-100': activeChartType === 'radar' || activeChartType === 'all', 'opacity-0': activeChartType !== 'radar' && activeChartType !== 'all'}"
+            >
               <div class="text-center">
                 <h3 class="text-blue-800 font-semibold mb-4">Compétences par acteur</h3>
                 <div class="relative w-48 h-48 mx-auto">
                   <!-- Radar chart visualization -->
-                  <div class="absolute inset-0 border-2 border-blue-200 rounded-full opacity-25"></div>
-                  <div class="absolute inset-[15%] border-2 border-blue-300 rounded-full opacity-50"></div>
-                  <div class="absolute inset-[30%] border-2 border-blue-400 rounded-full opacity-75"></div>
-                  <div class="absolute inset-[45%] border-2 border-blue-500 rounded-full"></div>
+                  <div v-for="(circle, i) in radarCircles" :key="'circle-'+i" 
+                       class="absolute border-2 border-blue-200 rounded-full transition-all duration-1000"
+                       :style="{
+                         inset: `${circle.inset}%`,
+                         opacity: circle.opacity
+                       }">
+                  </div>
                   
                   <!-- Radar lines -->
-                  <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="w-full h-[2px] bg-blue-200 rotate-0"></div>
-                  </div>
-                  <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="w-full h-[2px] bg-blue-200 rotate-45"></div>
-                  </div>
-                  <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="w-full h-[2px] bg-blue-200 rotate-90"></div>
-                  </div>
-                  <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="w-full h-[2px] bg-blue-200 rotate-135"></div>
+                  <div v-for="(line, i) in radarLines" :key="'line-'+i" 
+                       class="absolute inset-0 flex items-center justify-center transition-all duration-1000">
+                    <div class="w-full h-[2px] bg-blue-200"
+                         :style="{ transform: `rotate(${line.rotation}deg)` }">
+                    </div>
                   </div>
                   
                   <!-- Data points -->
                   <div class="absolute inset-0">
                     <svg viewBox="0 0 100 100" class="w-full h-full">
-                      <path d="M50,20 L70,30 L80,50 L70,70 L50,80 L30,70 L20,50 L30,30 Z" 
-                            fill="rgba(59, 130, 246, 0.2)" stroke="#3b82f6" stroke-width="2"></path>
-                      <circle cx="50" cy="20" r="3" fill="#3b82f6" />
-                      <circle cx="70" cy="30" r="3" fill="#3b82f6" />
-                      <circle cx="80" cy="50" r="3" fill="#3b82f6" />
-                      <circle cx="70" cy="70" r="3" fill="#3b82f6" />
-                      <circle cx="50" cy="80" r="3" fill="#3b82f6" />
-                      <circle cx="30" cy="70" r="3" fill="#3b82f6" />
-                      <circle cx="20" cy="50" r="3" fill="#3b82f6" />
-                      <circle cx="30" cy="30" r="3" fill="#3b82f6" />
+                      <path :d="radarPath" 
+                            fill="rgba(59, 130, 246, 0.2)" 
+                            stroke="#3b82f6" 
+                            stroke-width="2"
+                            class="transition-all duration-1000">
+                      </path>
+                      <circle 
+                        v-for="(point, i) in radarPoints" 
+                        :key="'point-'+i"
+                        :cx="point.x" 
+                        :cy="point.y" 
+                        r="3" 
+                        fill="#3b82f6"
+                        class="transition-all duration-1000">
+                      </circle>
                     </svg>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="bg-blue-50 rounded-xl p-5 h-72 flex items-center justify-center">
+            
+            <!-- Line Chart -->
+            <div 
+              v-show="activeChartType === 'line' || activeChartType === 'all'"
+              class="bg-blue-50 rounded-xl p-5 h-72 flex items-center justify-center transition-all duration-500"
+              :class="{'opacity-100': activeChartType === 'line' || activeChartType === 'all', 'opacity-0': activeChartType !== 'line' && activeChartType !== 'all'}"
+            >
               <div class="text-center w-full">
-                <h3 class="text-blue-800 font-semibold mb-4">Évolution temporelle</h3>
+                <div class="flex justify-between items-center mb-4">
+                  <h3 class="text-blue-800 font-semibold">Évolution temporelle</h3>
+                  <div class="flex space-x-2">
+                    <button 
+                      v-for="(period, i) in timePeriods" 
+                      :key="i"
+                      @click="activeTimePeriod = period.id"
+                      :class="[
+                        'px-2 py-1 text-xs rounded',
+                        activeTimePeriod === period.id 
+                          ? 'bg-blue-600 text-white' 
+                          : 'bg-blue-100 text-blue-800'
+                      ]"
+                    >
+                      {{ period.name }}
+                    </button>
+                  </div>
+                </div>
                 <div class="w-full h-40 relative">
                   <!-- Line chart visualization -->
                   <div class="absolute bottom-0 left-0 w-full h-[2px] bg-blue-300"></div>
                   <div class="absolute bottom-0 left-0 h-full w-[2px] bg-blue-300"></div>
                   
                   <!-- Grid lines -->
-                  <div class="absolute bottom-[25%] left-0 w-full h-[1px] bg-blue-200"></div>
-                  <div class="absolute bottom-[50%] left-0 w-full h-[1px] bg-blue-200"></div>
-                  <div class="absolute bottom-[75%] left-0 w-full h-[1px] bg-blue-200"></div>
+                  <div v-for="(line, i) in [1, 2, 3]" :key="'grid-'+i"
+                       class="absolute left-0 w-full h-[1px] bg-blue-200"
+                       :style="{ bottom: `${25 * line}%` }">
+                  </div>
                   
                   <!-- Data line -->
                   <div class="absolute bottom-0 left-0 w-full h-full">
                     <svg viewBox="0 0 100 50" class="w-full h-full">
-                      <path d="M0,40 L20,30 L40,35 L60,15 L80,25 L100,10" 
-                            fill="none" stroke="#3b82f6" stroke-width="2"></path>
-                      <path d="M0,40 L20,30 L40,35 L60,15 L80,25 L100,10 L100,50 L0,50 Z" 
-                            fill="url(#gradient)" stroke="none"></path>
+                      <path :d="linePath" 
+                            fill="none" 
+                            stroke="#3b82f6" 
+                            stroke-width="2"
+                            class="transition-all duration-1000">
+                      </path>
+                      <path :d="lineAreaPath" 
+                            fill="url(#gradient)" 
+                            stroke="none"
+                            class="transition-all duration-1000">
+                      </path>
                       
                       <!-- Gradient definition -->
                       <defs>
@@ -161,13 +216,28 @@
                       </defs>
                       
                       <!-- Data points -->
-                      <circle cx="0" cy="40" r="3" fill="#3b82f6" />
-                      <circle cx="20" cy="30" r="3" fill="#3b82f6" />
-                      <circle cx="40" cy="35" r="3" fill="#3b82f6" />
-                      <circle cx="60" cy="15" r="3" fill="#3b82f6" />
-                      <circle cx="80" cy="25" r="3" fill="#3b82f6" />
-                      <circle cx="100" cy="10" r="3" fill="#3b82f6" />
+                      <circle 
+                        v-for="(point, i) in linePoints" 
+                        :key="'linepoint-'+i"
+                        :cx="point.x" 
+                        :cy="point.y" 
+                        r="3" 
+                        fill="#3b82f6"
+                        class="transition-all duration-1000 hover:r-4">
+                      </circle>
                     </svg>
+                  </div>
+                  
+                  <!-- Tooltips -->
+                  <div 
+                    v-for="(point, i) in linePoints" 
+                    :key="'tooltip-'+i"
+                    class="absolute bg-white px-2 py-1 rounded shadow-md text-xs text-blue-800 transform -translate-x-1/2 -translate-y-full opacity-0 hover:opacity-100 transition-opacity"
+                    :style="{ 
+                      left: `${point.x}%`, 
+                      bottom: `calc(${point.y}% + 10px)` 
+                    }">
+                    {{ point.label }}: {{ point.value }}
                   </div>
                 </div>
               </div>
@@ -179,6 +249,7 @@
       <!-- Quick Access Buttons -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <button v-for="(action, index) in quickActions" :key="index"
+                @click="executeAction(action)"
                 class="flex flex-col items-center justify-center gap-3 p-6 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-1 group">
           <div class="p-4 rounded-full bg-blue-100 group-hover:bg-blue-600 transition-colors duration-200">
             <component :is="action.icon" class="h-6 w-6 text-blue-600 group-hover:text-white transition-colors duration-200" />
@@ -191,7 +262,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue'
 
 // Icons would normally be imported from a library like lucide-vue-next
 // For simplicity, I'm using placeholder components
@@ -220,6 +291,24 @@ const filters = ref({
   project: '',
   period: ''
 });
+
+// Chart types
+const chartTypes = ref([
+  { id: 'all', name: 'Tous' },
+  { id: 'radar', name: 'Compétences' },
+  { id: 'line', name: 'Évolution' }
+]);
+
+const activeChartType = ref('all');
+
+// Time periods for line chart
+const timePeriods = ref([
+  { id: 'week', name: 'Semaine' },
+  { id: 'month', name: 'Mois' },
+  { id: 'semester', name: 'Semestre' }
+]);
+
+const activeTimePeriod = ref('month');
 
 // Stats
 const stats = ref([
@@ -298,4 +387,176 @@ const quickActions = ref([
     icon: DownloadIcon
   }
 ]);
+
+// Radar chart data
+const radarSkills = ref([
+  { name: 'Communication', value: 80 },
+  { name: 'Leadership', value: 65 },
+  { name: 'Travail d\'équipe', value: 90 },
+  { name: 'Résolution de problèmes', value: 75 },
+  { name: 'Créativité', value: 60 },
+  { name: 'Adaptabilité', value: 85 },
+  { name: 'Organisation', value: 70 },
+  { name: 'Esprit critique', value: 80 }
+]);
+
+// Line chart data
+const lineData = ref({
+  week: [
+    { x: 0, y: 40, label: 'Lun', value: 3.0 },
+    { x: 20, y: 30, label: 'Mar', value: 3.5 },
+    { x: 40, y: 35, label: 'Mer', value: 3.2 },
+    { x: 60, y: 15, label: 'Jeu', value: 4.2 },
+    { x: 80, y: 25, label: 'Ven', value: 3.8 },
+    { x: 100, y: 10, label: 'Sam', value: 4.5 }
+  ],
+  month: [
+    { x: 0, y: 40, label: 'Sem 1', value: 3.0 },
+    { x: 20, y: 30, label: 'Sem 2', value: 3.5 },
+    { x: 40, y: 35, label: 'Sem 3', value: 3.2 },
+    { x: 60, y: 15, label: 'Sem 4', value: 4.2 },
+    { x: 80, y: 25, label: 'Sem 5', value: 3.8 },
+    { x: 100, y: 10, label: 'Sem 6', value: 4.5 }
+  ],
+  semester: [
+    { x: 0, y: 35, label: 'Jan', value: 3.2 },
+    { x: 20, y: 30, label: 'Fév', value: 3.5 },
+    { x: 40, y: 25, label: 'Mar', value: 3.8 },
+    { x: 60, y: 15, label: 'Avr', value: 4.2 },
+    { x: 80, y: 20, label: 'Mai', value: 4.0 },
+    { x: 100, y: 10, label: 'Juin', value: 4.5 }
+  ]
+});
+
+// Radar chart computed properties
+const radarCircles = ref([
+  { inset: 0, opacity: 0.25 },
+  { inset: 15, opacity: 0.5 },
+  { inset: 30, opacity: 0.75 },
+  { inset: 45, opacity: 1 }
+]);
+
+const radarLines = ref([
+  { rotation: 0 },
+  { rotation: 45 },
+  { rotation: 90 },
+  { rotation: 135 }
+]);
+
+// Calculate radar chart points
+const radarPoints = computed(() => {
+  const points = [];
+  const centerX = 50;
+  const centerY = 50;
+  const radius = 30;
+  
+  radarSkills.value.forEach((skill, index) => {
+    const angle = (Math.PI * 2 * index) / radarSkills.value.length;
+    const value = skill.value / 100; // Normalize to 0-1
+    const x = centerX + radius * value * Math.cos(angle - Math.PI/2);
+    const y = centerY + radius * value * Math.sin(angle - Math.PI/2);
+    points.push({ x, y });
+  });
+  
+  return points;
+});
+
+// Create radar path
+const radarPath = computed(() => {
+  if (radarPoints.value.length === 0) return '';
+  
+  let path = `M ${radarPoints.value[0].x} ${radarPoints.value[0].y}`;
+  
+  for (let i = 1; i < radarPoints.value.length; i++) {
+    path += ` L ${radarPoints.value[i].x} ${radarPoints.value[i].y}`;
+  }
+  
+  path += ' Z'; // Close the path
+  return path;
+});
+
+// Line chart computed properties
+const linePoints = computed(() => {
+  return lineData.value[activeTimePeriod.value];
+});
+
+const linePath = computed(() => {
+  if (linePoints.value.length === 0) return '';
+  
+  let path = `M ${linePoints.value[0].x} ${linePoints.value[0].y}`;
+  
+  for (let i = 1; i < linePoints.value.length; i++) {
+    path += ` L ${linePoints.value[i].x} ${linePoints.value[i].y}`;
+  }
+  
+  return path;
+});
+
+const lineAreaPath = computed(() => {
+  if (linePoints.value.length === 0) return '';
+  
+  let path = linePath.value;
+  path += ` L ${linePoints.value[linePoints.value.length - 1].x} 50`;
+  path += ` L ${linePoints.value[0].x} 50 Z`;
+  
+  return path;
+});
+
+// Methods
+const updateCharts = () => {
+  // Update radar chart data based on filters
+  const classFilter = filters.value.class;
+  const projectFilter = filters.value.project;
+  const periodFilter = filters.value.period;
+  
+  // Simulate data changes based on filters
+  radarSkills.value = radarSkills.value.map(skill => {
+    // Generate a random variation between -15 and +15
+    const variation = Math.floor(Math.random() * 30) - 15;
+    // Ensure the value stays between 0 and 100
+    const newValue = Math.max(0, Math.min(100, skill.value + variation));
+    return { ...skill, value: newValue };
+  });
+  
+  // Update line chart data
+  Object.keys(lineData.value).forEach(period => {
+    lineData.value[period] = lineData.value[period].map(point => {
+      // Generate a random variation between -10 and +10
+      const variation = Math.floor(Math.random() * 20) - 10;
+      // Ensure the y value stays between 0 and 50
+      const newY = Math.max(0, Math.min(50, point.y + variation));
+      // Update the value based on the y position (inverse relationship)
+      const newValue = ((50 - newY) / 10).toFixed(1);
+      return { ...point, y: newY, value: newValue };
+    });
+  });
+};
+
+const executeAction = (action) => {
+  console.log('Action exécutée:', action.title);
+  // Here you would implement the actual action
+  updateCharts(); // For demo purposes, update charts when an action is executed
+};
+
+// Watch for changes in time period
+watch(activeTimePeriod, () => {
+  // This would typically fetch new data for the selected time period
+  console.log('Période changée:', activeTimePeriod.value);
+});
+
+// Initialize with random data
+onMounted(() => {
+  // Simulate initial data load
+  updateCharts();
+  
+  // Set up interval for periodic updates (every 30 seconds)
+  setInterval(() => {
+    // Simulate real-time data updates
+    updateCharts();
+  }, 30000);
+});
 </script>
+
+<style scoped>
+/* Add any custom styles here */
+</style>
