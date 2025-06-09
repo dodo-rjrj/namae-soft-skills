@@ -136,6 +136,7 @@ jobs:
           touch src/assets/img1.jpg || true
           npm run build || echo "⚠️ Build failed but continuing workflow"
         continue-on-error: true
+      
 
   security-checks:
     needs: [frontend-build, backend]
@@ -218,6 +219,43 @@ jobs:
           image-ref: 'salmaalm/backend:latest' 
           severity: 'CRITICAL,HIGH'
           ignore-unfixed: true
+
+  deploy:
+    needs: [trivy-container-scan]  # Ne s'exécute que si tout a réussi avant
+    runs-on: ubuntu-latest
+    steps:
+    # Configuration de la clé SSH
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: unnecessary
+          if_key_exists: replace
+
+    # Ajout de l'hôte aux known_hosts
+      - name: Add host to known_hosts
+        run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+    # Déploiement via SSH
+      - name: Deploy to EC2
+        run: |
+        ssh ${{ secrets.SSH_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+        cd ~/app
+
+        # Télécharger les images les plus récentes
+        docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/backend:latest
+        docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
+
+        # Arrêter les conteneurs existants et démarrer les nouveaux
+        docker-compose down
+        docker-compose up -d
+
+        # Vérifier que les conteneurs sont en cours d'exécution
+        docker ps
+
+        # Nettoyer les images non utilisées
+        docker image prune -f
+        ENDSSH
   #docker-build:
     #runs-on: ubuntu-latest
     #steps:
