@@ -391,27 +391,7 @@ export default {
       }
     },
     
-    // Méthode pour gérer la redirection
-    redirectUser(userData) {
-      const role = userData.role || userData.user_type || 'default'
-      
-      switch (role.toLowerCase()) {
-        case 'admin':
-        case 'administrateur':
-          this.$router.push('/admin/dashboard')
-          break
-        case 'etudiant':
-        case 'student':
-          this.$router.push('/etudiant/dashboard')
-          break
-        case 'tuteur':
-        case 'tutor':
-          this.$router.push('/tuteur/dashboard')
-          break
-        default:
-          this.$router.push('/dashboard')
-      }
-    },
+  
     
     // Méthode de déconnexion
     logout() {

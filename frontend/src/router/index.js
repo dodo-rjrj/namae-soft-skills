@@ -110,6 +110,18 @@ const router = createRouter({
         }
       }
     },
+     {
+      path: '/coevaluer',
+      name: 'coevaluer',
+      component: () => import('../views/coevaluer.vue'),
+      meta: { 
+        requiresAuth: true,
+        roles: ['etudiant'],
+        security: {
+          noCache: true
+        }
+      }
+    },
     
     // Professor routes
     {
@@ -128,6 +140,19 @@ const router = createRouter({
       path: '/prof-analyse',
       name: 'prof-analyse',
       component: () => import('../views/prof-analyse.vue'),
+      meta: { 
+        requiresAuth: true,
+        roles: ['enseignant'],
+        security: {
+          noCache: true
+        }
+      }
+    },
+
+ {
+      path: '/prof-signalement',
+      name: 'prof-signalement',
+      component: () => import('../views/prof-signal.vue'),
       meta: { 
         requiresAuth: true,
         roles: ['enseignant'],
@@ -172,7 +197,18 @@ const router = createRouter({
         }
       }
     },
-    
+    {
+      path: '/tuteur',
+      name: 'tuteur',
+      component: () => import('../views/tuteur.vue'),
+      meta: { 
+        requiresAuth: true,
+        roles: ['proffesionnel'],
+        security: {
+          noCache: true
+        }
+      }
+    },
     // Admin routes
     {
       path: '/admin-gestionsignal',

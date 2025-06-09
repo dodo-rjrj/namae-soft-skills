@@ -1,7 +1,7 @@
 <script setup>
 import Sidebar from '../components/sidebare.vue'
 import Navbar from '../components/navbar.vue'
-import analyse from '../components/coevaluer.vue'
+import analyse from '../components/prof-signal.vue'
 
 </script>
 

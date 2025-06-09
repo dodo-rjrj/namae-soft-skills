@@ -1,6 +1,23 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-sky-50 to-purple-50 p-6">
     <div class="max-w-2xl mx-auto">
+      <!-- Header avec bouton de déconnexion -->
+      <div class="flex justify-between items-center mb-6">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 bg-gradient-to-r from-sky-500 to-purple-500 rounded-full"></div>
+          <span class="text-lg font-semibold text-gray-700">Système d'Évaluation</span>
+        </div>
+        <button
+          @click="logout"
+          class="flex items-center space-x-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-md"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+          <span>Déconnexion</span>
+        </button>
+      </div>
+
       <div class="bg-white rounded-2xl shadow-xl p-8">
         <h1 class="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-sky-600 to-purple-600 bg-clip-text text-transparent">
           Évaluation Étudiant
@@ -109,6 +126,31 @@
         >
           ✅ Évaluation soumise avec succès !
         </div>
+
+        <!-- Modal de confirmation de déconnexion -->
+        <div 
+          v-if="showLogoutModal" 
+          class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        >
+          <div class="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Confirmer la déconnexion</h3>
+            <p class="text-gray-600 mb-6">Êtes-vous sûr de vouloir vous déconnecter ? Toutes les données non sauvegardées seront perdues.</p>
+            <div class="flex space-x-4">
+              <button
+                @click="cancelLogout"
+                class="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                @click="confirmLogout"
+                class="flex-1 py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+              >
+                Se déconnecter
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -116,6 +158,12 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '../store/auth'
+
+const emit = defineEmits(['logout'])
+const router = useRouter()
+const authStore = useAuthStore()
 
 const student = ref({
   name: '',
@@ -132,6 +180,9 @@ const evaluationCriteria = ref([
 
 const comments = ref('')
 const showSuccess = ref(false)
+const showLogoutModal = ref(false)
+
+const role = computed(() => authStore.userRole)
 
 const globalScore = computed(() => {
   const total = evaluationCriteria.value.reduce((sum, criteria) => sum + criteria.score, 0)
@@ -166,6 +217,25 @@ const resetForm = () => {
   evaluationCriteria.value.forEach(criteria => criteria.score = 0)
   comments.value = ''
   showSuccess.value = false
+}
+
+const logout = () => {
+  showLogoutModal.value = true
+}
+
+const cancelLogout = () => {
+  showLogoutModal.value = false
+}
+
+const handleLogout = () => {
+  authStore.logout()
+  router.push('/login')
+  emit('logout')
+  showLogoutModal.value = false
+}
+
+const confirmLogout = () => {
+  handleLogout()
 }
 </script>
 

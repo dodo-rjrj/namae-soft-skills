@@ -20,7 +20,7 @@
           </div>
           
           <div class="action-buttons">
-            <button class="btn-report" @click="reportStudent">signaler</button>
+            <Router-link to="/prof-signalement"  class="btn-report">signaler</Router-link>
             <Router-link to="/prof-evaluation" class="btn-evaluate" >Evaluer</Router-link>
           </div>
         </div>
