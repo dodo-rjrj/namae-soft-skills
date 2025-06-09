@@ -89,6 +89,9 @@ export const useAuthStore = defineStore("auth", () => {
           case "administrateur":
             router.push("/admin-student-management");
             break;
+             case "proffesionnel":
+            router.push("/tuteur");
+            break;
           default:
             console.log("Unknown role:", utilisateur.role);
             router.push("/unauthorized");
