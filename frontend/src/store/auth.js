@@ -26,7 +26,7 @@ const MOCK_USERS = [
   },
   {
     id: 3,
-    email: "admin@test.com",
+    email: "admin3@test.com",
     mot_de_passe: "Password123!",
     nom: "Durand",
     prenom: "Pierre",
@@ -45,7 +45,7 @@ const MOCK_USERS = [
 ];
 
 // Variable pour activer/désactiver le mode mock
-const USE_MOCK_DATA = true; // Changez à false quand vous voulez utiliser la vraie API
+const USE_MOCK_DATA = false; // Changez à false quand vous voulez utiliser la vraie API
 
 export const useAuthStore = defineStore("auth", () => {
   const token = ref(localStorage.getItem("token") || "");
