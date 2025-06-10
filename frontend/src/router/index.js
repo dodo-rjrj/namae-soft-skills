@@ -148,6 +148,18 @@ const router = createRouter({
         }
       }
     },
+     {
+      path: '/prof_project',
+      name: 'prof_project',
+      component: () => import('../views/prof_projectpage.vue'),
+      meta: { 
+        requiresAuth: true,
+        roles: ['enseignant'],
+        security: {
+          noCache: true
+        }
+      }
+    },
 
  {
       path: '/prof-signalement',

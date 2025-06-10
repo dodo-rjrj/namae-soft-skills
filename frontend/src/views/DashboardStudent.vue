@@ -9,7 +9,7 @@
         </div>
         <SoftSkillCards />
         <CommentCount />
-        
+        <charts />
       </div>
     </div>
   </div></div>
@@ -24,6 +24,7 @@ import CommentCount from '../components/comment.vue'
 import Total from '../components/scorecard.vue'
 import Navbar from '../components/navbar.vue'
 import SoftSkillCards from '../components/SoftSkillCards.vue'
+import charts from '../components/student-chart.vue'
 
 
 const authStore = useAuthStore()
