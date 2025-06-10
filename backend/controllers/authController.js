@@ -13,7 +13,11 @@ exports.login = async (req, res) => {
         }
 
         // TEMPORARY: Direct comparison for plain text passwords
-        const motDePasseValide = mot_de_passe === utilisateur.mot_de_passe;
+        //const motDePasseValide = mot_de_passe === utilisateur.mot_de_passe;
+
+        //password ;ust be hashed
+        const motDePasseValide = await bcrypt.compare(mot_de_passe, utilisateur.mot_de_passe);
+
 
         if (!motDePasseValide) {
             return res.status(401).json({ error: 'Mot de passe incorrect.' });
