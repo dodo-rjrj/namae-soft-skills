@@ -304,8 +304,8 @@
         push: false
       },
       account: {
-        name: 'Jean Dupont',
-        email: 'jean.dupont@example.com'
+        name: 'rajei douae',
+        email: 'rajei.douae@etu.uae.acma'
       },
       profile: {
         avatar: null,

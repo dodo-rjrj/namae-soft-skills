@@ -273,16 +273,7 @@
       </div>    
       <!-- Common Menu Items for All Roles -->
       <div class="mt-auto">
-        <!-- Ask AI -->
-        <router-link
-          to="/ask-ai"
-          class="flex items-center px-4 py-5 cursor-pointer transition-all duration-200 rounded-[15px] hover:bg-blue-50"
-          :class="{ 'justify-center': collapsed, 'space-x-3': !collapsed }">
-          <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z"></path>
-          </svg>
-          <span v-if="!collapsed" class="text-blue-600"> IA</span>
-        </router-link>
+       
         
         <!-- Settings -->
         <router-link

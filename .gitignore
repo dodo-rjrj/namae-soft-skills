@@ -1,6 +1,7 @@
 .env
 .env.test
-
+.ignore
+mock_data
 # Logs
 logs
 *.log

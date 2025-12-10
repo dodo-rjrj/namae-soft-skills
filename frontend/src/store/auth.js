@@ -25,8 +25,8 @@ const MOCK_USERS = [
     telephone: "0123456790"
   },
   {
-    id: 78,
-    email: "admin3@test.com",
+    id: 3,
+    email: "admin@test.com",
     mot_de_passe: "Password123!",
     nom: "Durand",
     prenom: "Pierre",
@@ -191,7 +191,7 @@ export const useAuthStore = defineStore("auth", () => {
             router.push("/prof-dashboard");
             break;
           case "administrateur":
-            router.push("/admin-static");
+            router.push("/admin-student-management");
             break;
           case "proffesionnel":
             router.push("/tuteur");

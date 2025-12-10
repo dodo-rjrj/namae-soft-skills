@@ -3,5 +3,13 @@
     "pg": "^8.16.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.7"
+  },
+   "scripts": {
+    "start:all": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend && npm start",
+    "client": "cd frontend && npm run dev"}
+  ,"devDependencies": {
+    "concurrently": "^9.0.0"
   }
 }
+
