@@ -7,9 +7,9 @@
 
 ## 🛠 Installation
 ```bash
-git clone https://github.com/votre-repo.git
+git clone https://github.com/dodo-rjrj/namae-soft-skills.git
 cd projet
-git checkout developp
+
 ```
 
 ## 🚀Lancement avec Docker
